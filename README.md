@@ -1,6 +1,4 @@
 # hospital management system
-
-این برنامه تهیه شده تا نمونه ی برای یک برنامه پیام رسان برای موسسات و شرکت ها باشد
   <p align="center" >
         <img width="20%" src="images/database.png"/>
         
