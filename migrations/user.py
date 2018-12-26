@@ -11,7 +11,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 mycursor.execute(
-    "CREATE TABLE users (username  char(50) PRIMARY KEY,name VARCHAR(255), family_name VARCHAR(255),"
+    "CREATE TABLE IF NOT EXISTS users (username  char(50) PRIMARY KEY,name VARCHAR(255), family_name VARCHAR(255),"
     "phone_number CHAR(15),"
     "password VARCHAR(64),salt VARCHAR(16),email VARCHAR(32),birth_date DATETIME,postal_code VARCHAR(32),"
-    "address TEXT,weight TINYINT,gender TINYINT,height TINYINT,state TINYINTs)")
+    "address TEXT,weight TINYINT,gender TINYINT,height TINYINT,state TINYINT)")

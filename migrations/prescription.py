@@ -10,4 +10,4 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE TABLE IF NOT EXISTS patient (username char(50) ,FOREIGN KEY (username) REFERENCES users(username)   ON UPDATE CASCADE   ON DELETE RESTRICT)")
+mycursor.execute("CREATE TABLE IF NOT EXISTS prescription (docter_id char(50) NOT NULL , id int(10) PRIMARY KEY NOT NULL , patient_id char(50) NOT NULL , `date` DATETIME);")

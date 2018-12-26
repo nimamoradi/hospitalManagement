@@ -9,4 +9,4 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE DATABASE " + database['db_name'])
+mycursor.execute("CREATE DATABASE IF NOT EXISTS " + database['db_name'])
