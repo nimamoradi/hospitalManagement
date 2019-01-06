@@ -11,5 +11,5 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 mycursor.execute(
-    "CREATE TABLE IF NOT EXISTS ActiviateTokens (id  int(10) PRIMARY KEY,Token VARCHAR(255), TokenExp DATETIME,"
+    "CREATE TABLE IF NOT EXISTS ActiviateTokens (id  int(10) PRIMARY KEY AUTO_INCREMENT,Token VARCHAR(255), TokenExp DATETIME,"
     "Username char(50))")

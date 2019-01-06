@@ -153,21 +153,22 @@ def confirmEmail():
     db = db_mysql.db
     cursor = db_mysql.newCursor()
     cursor.execute(
-        "SELECT * FROM 'ActiviateTokens' WHERE 'Token' = %s;", (Token,))
+        "SELECT * FROM ActiviateTokens WHERE Token = %s;", (Token,))
     if cursor.rowcount <= 0:
         return {'OK': False, 'Error': 'Incorrect Token'}
 
     row = cursor.fetchone()
     Username = row['Username']
     TokenExp = row['TokenExp']
-    if TokenExp < int(time.time()):
+    import datetime
+    if TokenExp < datetime.datetime.now():
         return {'OK': False, 'Error': 'Expired Token'}
 
     cursor = db_mysql.newCursor()
     cursor.execute(
-        "UPDATE 'Users' SET 'IsActive' = True WHERE 'Username' = %s", (Username,))
+        "UPDATE Users SET state = True WHERE Username = %s", (Username,))
     cursor.execute(
-        "DELETE FROM 'ActiviateTokens' WHERE 'Username' = %s", (Username,))
+        "DELETE FROM ActiviateTokens WHERE Username = %s", (Username,))
     db.commit()
 
     dict = {'OK': True}
@@ -272,7 +273,7 @@ def sendEmailVerfication(Email, Username):
     TokenURL = serverAddrs + "/confirm?token=" + str(Token)
     body = "متن ایمیل: \n %s" % (
         TokenURL)
-    Mail.mail(Email, "no-reply: Activiate your MagicGram Account", body)
+    Mail.mail(Email, "no-reply: Activiate your hospital Account", body)
 
 # def checkLogin(session):
 #     t = int(time.time())
