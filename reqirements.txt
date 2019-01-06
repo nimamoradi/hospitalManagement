@@ -1,3 +1,5 @@
 hashlib
 uuid
 mysql
+bottle
+MySQLdb
