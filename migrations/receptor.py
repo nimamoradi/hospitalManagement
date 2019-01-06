@@ -1,5 +1,5 @@
 import mysql.connector
-from config import database
+from migrations.config import database
 
 mydb = mysql.connector.connect(
     host=database['host'],

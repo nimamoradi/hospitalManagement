@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-
-import sys
+import binascii
+import codecs
 import hashlib
-import uuid
+import secrets
+
 import time
 import os
 import random
@@ -14,7 +15,7 @@ from bottle import Bottle, get, post, route, run, template, request, hook, respo
 # import botManager
 from reqest_mangment import db_mysql, Mail
 
-print ("hi server")
+print("hi server")
 
 serverAddrs = "http://localhost:2228"
 
@@ -38,13 +39,13 @@ def index():
 indx = 0
 
 
-
 @get('/ip')  # route == get1
 def index():
-    print ("hello from ip")
+    print("hello from ip")
     ip = request.environ.get('REMOTE_ADDR')
 
     return template("Your IP = {{ip}}", ip=ip)
+
 
 # # کرون جاب های برنامه (اکسپایر کردن توکن ها) باید حداقل هر دقیقه صدا زده شود
 # @get('/cronJob')  # route == get1
@@ -55,14 +56,12 @@ def index():
 # تایید کردن اکانت توسط لینکی که ایمیل شده
 @get('/confirm')
 def index():
-
     dict = confirmEmail()
     return dict
 
 
 @route('/login', method=['POST', 'OPTIONS'])
 def index():
-
     if not request.json:
         return "error: not a json"
 
@@ -75,6 +74,7 @@ def index():
 @route('/register', method=['POST', 'OPTIONS'])
 def index():
     # TODO XSS safe the input
+    print("request" + str(request))
     if not request.json:
         return "error: not a json"
 
@@ -86,12 +86,11 @@ def index():
 
 @route('/json', method=['POST', 'OPTIONS'])
 def index():
-
     if not request.json:
         return "error: not a json"
 
     j = request.json
-    print ("hello from json")
+    print("hello from json")
 
     # botManager.set_account_setting("mghayour7362",j)
 
@@ -108,10 +107,8 @@ def index(user):
     return a
 
 
-
 @route('/uploadPhoto', method=['POST', 'OPTIONS'])
 def do_upload():
-
     account_name = request.forms.get('account_name')
     session = request.forms.get('Session')
     time_stamp = request.forms.get('TimeStamp')
@@ -137,12 +134,13 @@ def do_upload():
         rand = ''.join([random.choice(string.ascii_letters + string.digits)
                         for n in range(10)])
         file_path = "Photos/{file}".format(file=Username +
-                                           "-" + rand + upload.filename)
+                                                "-" + rand + upload.filename)
         upload.save(file_path)
 
         cursor = db_mysql.newCursor()
-        cursor.execute("INSERT INTO 'Photos'('Username', 'PhotoName', 'PhotoCaption', 'PostTime') VALUES (%s, %s, %s, %s)",
-                       (Username, file_path, caption, time_stamp))
+        cursor.execute(
+            "INSERT INTO 'Photos'('Username', 'PhotoName', 'PhotoCaption', 'PostTime') VALUES (%s, %s, %s, %s)",
+            (Username, file_path, caption, time_stamp))
 
     except Exception as e:
         return "somthing went wrong"
@@ -151,7 +149,6 @@ def do_upload():
 
 
 def confirmEmail():
-
     Token = str(request.GET.get('token', '').strip())
     db = db_mysql.db
     cursor = db_mysql.newCursor()
@@ -178,7 +175,6 @@ def confirmEmail():
 
 
 def register(j):
-
     db = db_mysql.db
     cursor = db_mysql.newCursor()
 
@@ -187,31 +183,34 @@ def register(j):
     LastName = j['LastName']
     Password = j['Password']
     Email = j['Email']
-    CellNumber = j['CellNumber']
 
-    if CellNumber is None or Email is None or Password in None or LastName is None or FirstName is None or Username is None:
-        return {'OK': False, 'Error': "not a valid json"}
+    # if CellNumber is None or Email is None or Password in None or LastName is None or FirstName is None or Username is None:
+    #     return {'OK': False, 'Error': "not a valid json"}
 
-    Salt = os.urandom(16).encode('hex')
-    Password = hashlib.sha512(Password + Salt).hexdigest()
-    t = int(time.time())
+    Salt = secrets.token_hex(16)
+    temp = (Salt + Password)
+    hash = hashlib.sha512()
+    hash.update(temp.encode('utf-8'))
+    Password = hash.hexdigest()
+    # Password = hashlib.sha512(temp).hexdigest()
 
     cursor.execute(
-        "SELECT * FROM 'Users' WHERE 'Username' = %s ;", (Username,))
+        'SELECT * FROM users WHERE username = %s ;', (Username,))
     if cursor.rowcount > 0:
         return {'OK': False, 'Error': 'Username already exists'}
 
-    cursor.execute("SELECT * FROM 'Users' WHERE 'Email' = %s ;", (Email,))
+    cursor.execute('SELECT * FROM users WHERE email = %s ;', (Email,))
     if cursor.rowcount > 0:
         return {'OK': False, 'Error': 'Email already exists in system'}
 
-    cursor.execute("INSERT INTO 'Users'('Username', 'Password', 'Salt', 'Email', 'Firstname', 'LastName', 'CellNumber', 'IsActive', 'CreationTime')"
-                   + " VALUES ( %s, %s, %s, %s, %s, %s, %s, FALSE, %s);", (Username, Password, Salt, Email, FirstName, LastName, CellNumber, t))
+    cursor.execute("INSERT INTO users(username, password, salt, email, name, family_name, state)"
+                   + " VALUES ( %s, %s, %s, %s, %s, %s, FALSE);",
+                   (Username, Password, Salt, Email, FirstName, LastName,))
     db.commit()
     try:
         sendEmailVerfication(Email, Username)
     except smtplib.SMTPRecipientsRefused as e:
-        print ("email not sent: Bad Recipient")  # inform user
+        print("email not sent: Bad Recipient")  # inform user
         ok = False
         error = "Email address not correct"
 
@@ -220,7 +219,6 @@ def register(j):
 
 
 def login(j):
-
     db = db_mysql.db
     cursor = db_mysql.newCursor()
 
@@ -230,18 +228,18 @@ def login(j):
         return {'OK': False, 'Error': "not a valid json"}
 
     cursor.execute(
-        "SELECT * FROM 'Users' WHERE 'Username' = %s ;", (Username,))
+        "SELECT * FROM 'users' WHERE 'username' = %s ;", (Username,))
     if cursor.rowcount <= 0:
         cursor.execute(
-            "SELECT * FROM 'Users' WHERE 'Email' = %s ;", (Username,))
+            "SELECT * FROM 'users' WHERE 'email' = %s ;", (Username,))
 
     if cursor.rowcount <= 0:
         return {'OK': False, 'Error': "User doesn't exist"}
 
     row = cursor.fetchone()
-    Salt = row['Salt']
-    dbPassword = row['Password']
-    isActive = row['IsActive']
+    Salt = row['salt']
+    dbPassword = row['password']
+    isActive = row['state']
     enteredPassword = hashlib.sha512(Password + Salt).hexdigest()
     if dbPassword == enteredPassword:
         if isActive == True:
@@ -250,7 +248,8 @@ def login(j):
             cursor = db_mysql.newCursor()
             SessionExp = int(time.time()) + (10 * 24 * 3600)
             cursor.execute(
-                "INSERT INTO 'Sessions' ('Username', 'Session', 'SessionExp') VALUES (%s, %s, %s);", (Username, Session, SessionExp))
+                "INSERT INTO 'Sessions' ('Username', 'Session', 'SessionExp') VALUES (%s, %s, %s);",
+                (Username, Session, SessionExp))
             db.commit()
             return {'OK': True, 'Session': Session, 'User': row}
         return {'OK': False, 'Error': "Account is not activated"}
@@ -262,10 +261,12 @@ def sendEmailVerfication(Email, Username):
 
     db = db_mysql.db
     cursor = db_mysql.newCursor()
-    expTime = int(time.time()) + 900
-    Token = os.urandom(16).encode('hex')
+    import datetime
+    expTime = datetime.datetime.now() + datetime.timedelta(days=1)
+    Token = secrets.token_hex(16)
     cursor.execute(
-        "INSERT INTO 'ActiviateTokens' ('Token', 'TokenExp', 'Username') VALUES (%s, %s, %s);", (Token, expTime, Username))
+        "INSERT INTO ActiviateTokens (Token, TokenExp, Username) VALUES (%s, %s, %s);",
+        (Token, expTime, Username))
     db.commit()
 
     TokenURL = serverAddrs + "/confirm?token=" + str(Token)
@@ -273,26 +274,23 @@ def sendEmailVerfication(Email, Username):
         TokenURL)
     Mail.mail(Email, "no-reply: Activiate your MagicGram Account", body)
 
+# def checkLogin(session):
+#     t = int(time.time())
+#     cursor = db_mysql.newCursor()
+#     cursor.execute(
+#         "SELECT * FROM 'Sessions' WHERE 'Session' = %s AND 'SessionExp' > %s ;", (session, t))
+#     if cursor.rowcount <= 0:
+#         return False
+#
+#     row = cursor.fetchone()
+#     Username = row['Username']
+#     return Username
 
-def checkLogin(session):
-    t = int(time.time())
-    cursor = db_mysql.newCursor()
-    cursor.execute(
-        "SELECT * FROM 'Sessions' WHERE 'Session' = %s AND 'SessionExp' > %s ;", (session, t))
-    if cursor.rowcount <= 0:
-        return False
-
-    row = cursor.fetchone()
-    Username = row['Username']
-    return Username
-
-
-def check_account_ownership(username, account_name):
-    cursor = db_mysql.newCursor()
-    cursor.execute(
-        "SELECT * FROM 'InstagramAccounts' WHERE 'Username' = %s AND 'InstagramUsername' = %s", (username, account_name))
-    if cursor.rowcount > 0:
-        return True
-    return False
-
-
+#
+# def check_account_ownership(username, account_name):
+#     cursor = db_mysql.newCursor()
+#     cursor.execute(
+#         "SELECT * FROM 'InstagramAccounts' WHERE 'Username' = %s AND 'InstagramUsername' = %s", (username, account_name))
+#     if cursor.rowcount > 0:
+#         return True
+#     return False

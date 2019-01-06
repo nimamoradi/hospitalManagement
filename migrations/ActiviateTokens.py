@@ -1,5 +1,5 @@
 import mysql.connector
-from migrations.config import database
+from config import database
 
 mydb = mysql.connector.connect(
     host=database['host'],
@@ -10,4 +10,6 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE TABLE IF NOT EXISTS admin (username char(50) ,FOREIGN KEY (username) REFERENCES users(username)   ON UPDATE CASCADE   ON DELETE RESTRICT)")
+mycursor.execute(
+    "CREATE TABLE IF NOT EXISTS ActiviateTokens (id  int(10) PRIMARY KEY,Token VARCHAR(255), TokenExp DATETIME,"
+    "Username char(50))")
