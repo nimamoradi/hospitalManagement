@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import binascii
 import codecs
+import datetime
 import hashlib
 import secrets
 
@@ -229,30 +230,35 @@ def login(j):
         return {'OK': False, 'Error': "not a valid json"}
 
     cursor.execute(
-        "SELECT * FROM 'users' WHERE 'username' = %s ;", (Username,))
+        "SELECT * FROM users WHERE username = %s ;", (Username,))
     if cursor.rowcount <= 0:
         cursor.execute(
-            "SELECT * FROM 'users' WHERE 'email' = %s ;", (Username,))
+            "SELECT * FROM users WHERE email = %s ;", (Username,))
 
     if cursor.rowcount <= 0:
         return {'OK': False, 'Error': "User doesn't exist"}
 
     row = cursor.fetchone()
     Salt = row['salt']
+    print('salt ' + Salt)
     dbPassword = row['password']
     isActive = row['state']
-    enteredPassword = hashlib.sha512(Password + Salt).hexdigest()
+
+    hash = hashlib.sha512()
+    hash.update((Salt + Password).encode('utf-8'))
+    enteredPassword = hash.hexdigest()
+    print("enteredPassword " + enteredPassword + "\n" + "has " + dbPassword)
     if dbPassword == enteredPassword:
         if isActive == True:
             T = int(time.time())
-            Session = os.urandom(16).encode('hex')
+            Session = secrets.token_hex(16)
             cursor = db_mysql.newCursor()
-            SessionExp = int(time.time()) + (10 * 24 * 3600)
+            SessionExp = datetime.datetime.now() + datetime.timedelta(days=2)
             cursor.execute(
-                "INSERT INTO 'Sessions' ('Username', 'Session', 'SessionExp') VALUES (%s, %s, %s);",
+                "INSERT INTO api_keys (username, api_key, exp_date) VALUES (%s, %s, %s);",
                 (Username, Session, SessionExp))
             db.commit()
-            return {'OK': True, 'Session': Session, 'User': row}
+            return {'OK': True, 'api_key': Session, 'User': row}
         return {'OK': False, 'Error': "Account is not activated"}
     return {'OK': False, 'Error': "Wrong Password"}
 
@@ -275,17 +281,18 @@ def sendEmailVerfication(Email, Username):
         TokenURL)
     Mail.mail(Email, "no-reply: Activiate your hospital Account", body)
 
-# def checkLogin(session):
-#     t = int(time.time())
-#     cursor = db_mysql.newCursor()
-#     cursor.execute(
-#         "SELECT * FROM 'Sessions' WHERE 'Session' = %s AND 'SessionExp' > %s ;", (session, t))
-#     if cursor.rowcount <= 0:
-#         return False
-#
-#     row = cursor.fetchone()
-#     Username = row['Username']
-#     return Username
+
+def checkLogin(session):
+    t = datetime.datetime.now()
+    cursor = db_mysql.newCursor()
+    cursor.execute(
+        "SELECT * FROM api_keys WHERE api_key = %s AND exp_date > %s ;", (session, t))
+    if cursor.rowcount <= 0:
+        return False
+
+    row = cursor.fetchone()
+    Username = row['username']
+    return Username
 
 #
 # def check_account_ownership(username, account_name):
