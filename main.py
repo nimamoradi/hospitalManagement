@@ -1,5 +1,6 @@
-from reqest_mangment.main import main as _req
+from request_management.main import main as _req
 from migrate import migrate
+
 def main():
     # migrate()
     _req()

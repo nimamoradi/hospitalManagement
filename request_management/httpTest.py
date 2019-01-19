@@ -14,7 +14,7 @@ from bottle import Bottle, get, post, route, run, template, request, hook, respo
 
 # import cronJobs
 # import botManager
-from reqest_mangment import db_mysql, Mail
+from request_management import db_mysql, Mail
 
 print("hi server")
 
