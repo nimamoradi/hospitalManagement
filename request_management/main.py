@@ -1,5 +1,5 @@
 import time
-from reqest_mangment import httpTest
+from request_management import httpTest
 
 
 def main():
