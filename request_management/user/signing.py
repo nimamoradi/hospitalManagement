@@ -41,7 +41,7 @@ def register(j):
                    (username, password, salt, email, name, phone_number, role, ))
     db.commit()
     try:
-        # send_username_by_email(email, username)
+        send_username_by_email(email, username)
         pass
     except smtplib.SMTPRecipientsRefused as e:
         print("email not sent: Bad Recipient" + e)  # inform user
@@ -50,7 +50,6 @@ def register(j):
 
     dict = {'OK': True}
     return dict
-
 
 def login(j):
     db = db_mysql.db
@@ -93,7 +92,6 @@ def login(j):
 
     return {'OK': False, 'Error': "Wrong Password"}
 
-
 def send_username_by_email(Email, Username):
     # design a user friendly email body
 
@@ -107,9 +105,8 @@ def send_username_by_email(Email, Username):
     #     (Token, expTime, Username))
     # db.commit()
 
-    body = "your username is: \n %s" % (Username)
+    body = "Your username is: \n%s" % (Username)
     Mail.mail(Email, "no-reply: Your hospital account username", body)
-
 
 def checkLogin(session):
     t = datetime.datetime.now()
@@ -120,8 +117,8 @@ def checkLogin(session):
         return False
 
     row = cursor.fetchone()
-    Username = row['username']
-    return Username
+    username = row['username']
+    return username
 
 def make_username(role):
     alphabet = string.ascii_lowercase

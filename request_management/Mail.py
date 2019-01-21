@@ -13,8 +13,8 @@ import os
 
 def mail(to, subject, text, attach=None):
     try:
-        gmail_user = "nimmmamoradi@gmail.com"
-        gmail_pwd = "h7ATJ5uq5sLu7bW"
+        gmail_user = "no.reply.hospitalmgmt@gmail.com"
+        gmail_pwd = "wpoekgdTnjvd155"
         msg = MIMEMultipart()
         msg['From'] = gmail_user
         msg['To'] = to
