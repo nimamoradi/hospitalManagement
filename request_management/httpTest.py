@@ -2,19 +2,11 @@
 import binascii
 import codecs
 import datetime
-import hashlib
-import secrets
-
-import time
 import os
-import random
-import smtplib
 import string
 from bottle import Bottle, get, post, route, run, template, request, hook, response
-
-# import cronJobs
-# import botManager
-from reqest_mangment import db_mysql, Mail
+from request_management import db_mysql, Mail
+from request_management.user import signing
 
 print("hi server")
 
@@ -68,20 +60,20 @@ def index():
 
     j = request.json
 
-    dict = login(j)
+    dict = signing.login(j)
     return dict  # send api result as json, no need to encode
 
 
 @route('/register', method=['POST', 'OPTIONS'])
 def index():
     # TODO XSS safe the input
-    print("request" + str(request))
+    # print("request" + str(request.json))
     if not request.json:
         return "error: not a json"
 
     j = request.json
+    dict = signing.register(j)
 
-    dict = register(j)
     return dict  # send api result as json, no need to encode
 
 
@@ -92,8 +84,6 @@ def index():
 
     j = request.json
     print("hello from json")
-
-    # botManager.set_account_setting("mghayour7362",j)
 
     log = {'Name': 'Zara', 'title': "pro", 'Class': 'First'}
     return log  # a # send api result as json, no need to encode
@@ -176,123 +166,6 @@ def confirmEmail():
     return dict
 
 
-def register(j):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
-
-    Username = j['Username']
-    FirstName = j['FirstName']
-    LastName = j['LastName']
-    Password = j['Password']
-    Email = j['Email']
-
-    # if CellNumber is None or Email is None or Password in None or LastName is None or FirstName is None or Username is None:
-    #     return {'OK': False, 'Error': "not a valid json"}
-
-    Salt = secrets.token_hex(16)
-    temp = (Salt + Password)
-    hash = hashlib.sha512()
-    hash.update(temp.encode('utf-8'))
-    Password = hash.hexdigest()
-    # Password = hashlib.sha512(temp).hexdigest()
-
-    cursor.execute(
-        'SELECT * FROM users WHERE username = %s ;', (Username,))
-    if cursor.rowcount > 0:
-        return {'OK': False, 'Error': 'Username already exists'}
-
-    cursor.execute('SELECT * FROM users WHERE email = %s ;', (Email,))
-    if cursor.rowcount > 0:
-        return {'OK': False, 'Error': 'Email already exists in system'}
-
-    cursor.execute("INSERT INTO users(username, password, salt, email, name, family_name, state)"
-                   + " VALUES ( %s, %s, %s, %s, %s, %s, FALSE);",
-                   (Username, Password, Salt, Email, FirstName, LastName,))
-    db.commit()
-    try:
-        sendEmailVerfication(Email, Username)
-    except smtplib.SMTPRecipientsRefused as e:
-        print("email not sent: Bad Recipient")  # inform user
-        ok = False
-        error = "Email address not correct"
-
-    dict = {'OK': True}
-    return dict
-
-
-def login(j):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
-
-    Username = j['Username']
-    Password = j['Password']
-    if Username is None or Password is None:
-        return {'OK': False, 'Error': "not a valid json"}
-
-    cursor.execute(
-        "SELECT * FROM users WHERE username = %s ;", (Username,))
-    if cursor.rowcount <= 0:
-        cursor.execute(
-            "SELECT * FROM users WHERE email = %s ;", (Username,))
-
-    if cursor.rowcount <= 0:
-        return {'OK': False, 'Error': "User doesn't exist"}
-
-    row = cursor.fetchone()
-    Salt = row['salt']
-    print('salt ' + Salt)
-    dbPassword = row['password']
-    isActive = row['state']
-
-    hash = hashlib.sha512()
-    hash.update((Salt + Password).encode('utf-8'))
-    enteredPassword = hash.hexdigest()
-    print("enteredPassword " + enteredPassword + "\n" + "has " + dbPassword)
-    if dbPassword == enteredPassword:
-        if isActive == True:
-            T = int(time.time())
-            Session = secrets.token_hex(16)
-            cursor = db_mysql.newCursor()
-            SessionExp = datetime.datetime.now() + datetime.timedelta(days=2)
-            cursor.execute(
-                "INSERT INTO api_keys (username, api_key, exp_date) VALUES (%s, %s, %s);",
-                (Username, Session, SessionExp))
-            db.commit()
-            return {'OK': True, 'api_key': Session, 'User': row}
-        return {'OK': False, 'Error': "Account is not activated"}
-    return {'OK': False, 'Error': "Wrong Password"}
-
-
-def sendEmailVerfication(Email, Username):
-    # design a user friendly email body
-
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
-    import datetime
-    expTime = datetime.datetime.now() + datetime.timedelta(days=1)
-    Token = secrets.token_hex(16)
-    cursor.execute(
-        "INSERT INTO ActiviateTokens (Token, TokenExp, Username) VALUES (%s, %s, %s);",
-        (Token, expTime, Username))
-    db.commit()
-
-    TokenURL = serverAddrs + "/confirm?token=" + str(Token)
-    body = "متن ایمیل: \n %s" % (
-        TokenURL)
-    Mail.mail(Email, "no-reply: Activiate your hospital Account", body)
-
-
-def checkLogin(session):
-    t = datetime.datetime.now()
-    cursor = db_mysql.newCursor()
-    cursor.execute(
-        "SELECT * FROM api_keys WHERE api_key = %s AND exp_date > %s ;", (session, t))
-    if cursor.rowcount <= 0:
-        return False
-
-    row = cursor.fetchone()
-    Username = row['username']
-    return Username
 
 #
 # def check_account_ownership(username, account_name):

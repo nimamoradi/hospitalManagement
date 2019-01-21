@@ -5,7 +5,6 @@ from migrations.config import database
 
 print("Hi MySQL")
 # Open database connection
-db = 0
 
 try:
     db = MySQLdb.connect(host=database['host'],
@@ -34,3 +33,18 @@ cursor.execute("SELECT VERSION()")
 # Fetch a single row using fetchone() method.
 data = cursor.fetchone()
 print(str(data))
+
+
+def new_db():
+    try:
+        db = MySQLdb.connect(host=database['host'],
+                            user=database['user'],
+                            passwd=database['passwd'],
+                            db=database['db_name'],
+                            unix_socket="/opt/lampp/var/mysql/mysql.sock")
+        db.set_character_set('utf8')
+        return db
+    except MySQLdb.Error as e:
+        print(str(e))
+    
+
