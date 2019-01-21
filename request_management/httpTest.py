@@ -6,7 +6,7 @@ import os
 import string
 from bottle import Bottle, get, post, route, run, template, request, hook, response
 from request_management import db_mysql, Mail
-from request_management.user import signing
+from request_management.user import signing, profile
 
 print("hi server")
 
@@ -75,6 +75,18 @@ def index():
     dict = signing.register(j)
 
     return dict  # send api result as json, no need to encode
+
+
+@route('/edit_profile', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+
+    j = request.json
+
+    dict = profile.edit_profile(j)
+    return dict  # send api result as json, no need to encode
+
 
 
 @route('/json', method=['POST', 'OPTIONS'])

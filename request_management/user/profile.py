@@ -8,46 +8,39 @@ import datetime
 from request_management import db_mysql, Mail
 
 
-def register(j):
+def edit_profile(j):
     db = db_mysql.db
     cursor = db_mysql.newCursor()
 
+    api_key = j['api_key']
     name = j['name']
     phone_number = j['phone_number']
-    role = j['role']
+    birth_year = j['birth_year']
+    postal_code = j['postal_code']
+    address = j['address']
+    weight = j['weight']
+    gender = j['gender']
+    height = j['height']
     password = j['password']
-    email = j['email']
 
-    if phone_number is None or email is None or name is None or role is None:
-        return {'OK': False, 'Error': "not a valid json"}
+    if api_key is None:
+        return {'OK': False, 'Error': "You are not logged in"}
 
-    salt = secrets.token_hex(16)
-    temp = (salt + password)
-    hash = hashlib.sha512()
-    hash.update(temp.encode('utf-8'))
-    password = hash.hexdigest()
-    # Password = hashlib.sha512(temp).hexdigest()
+    if password is not None and password != "":
+        salt = secrets.token_hex(16)
+        temp = (salt + password)
+        hash = hashlib.sha512()
+        hash.update(temp.encode('utf-8'))
+        password = hash.hexdigest()
+        cursor.execute("UPDATE `users` SET password = %s, salt = %s",
+                       (password, salt,))
+        db.commit()
 
-    cursor.execute('SELECT * FROM users WHERE email = %s ;', (email,))
-    print("     ")
-    print(cursor.rowcount)
+    cursor.execute("UPDATE `users` SET name = %s, phone_number =%s, birth_year = %s, postal_code = %s, address = %s, weight = %s,\
+                    gender = %s, height = %s",
+                   (name, phone_number, birth_year, postal_code, address, weight, gender, height))
     db.commit()
-    if cursor.rowcount > 0:
-        return {'OK': False, 'Error': 'Email %s already exists in system ' % cursor.fetchone()['email']}
-
-    username = make_username(role)
-    cursor.execute("INSERT INTO users(username, password, salt, email, name, phone_number, role)"
-                   + " VALUES ( %s, %s, %s, %s, %s, %s, %s);",
-                   (username, password, salt, email, name, phone_number, role, ))
-    db.commit()
-    try:
-        send_username_by_email(email, username)
-        pass
-    except smtplib.SMTPRecipientsRefused as e:
-        print("email not sent: Bad Recipient" + e)  # inform user
-        ok = False
-        error = "Email address not correct"
-
+    
     dict = {'OK': True}
     return dict
 
@@ -62,26 +55,24 @@ def login(j):
         return {'OK': False, 'Error': "not a valid json"}
 
     cursor.execute(
-        "SELECT * FROM users WHERE username = %s ;", (username,))
+        "SELECT  `username`, `name`, `phone_number`, `email`, `birth_year`, `postal_code`, `address`, `weight`, `gender`, `height`, `state`, `role` FROM users WHERE username = %s ;", (username,))
     db.commit()
     if cursor.rowcount <= 0:
         cursor.execute(
-            "SELECT * FROM users WHERE email = %s ;", (username,))
+            "SELECT `username`, `name`, `phone_number`, `email`, `birth_year`, `postal_code`, `address`, `weight`, `gender`, `height`, `state`, `role` FROM users WHERE email = %s ;", (username,))
         db.commit()
 
     if cursor.rowcount <= 0:
-        return {'OK': False, 'Error': "Wrong username or password"}
+        return {'OK': False, 'Error': "User doesn't exist"}
 
     row = cursor.fetchone()
     salt = row['salt']
     dbPassword = row['password']
-    del row['password']
-    del row['salt']
 
     hash = hashlib.sha512()
     hash.update((salt + password).encode('utf-8'))
     enteredPassword = hash.hexdigest()
-
+    # print("enteredPassword " + enteredPassword + "\n" + "has " + dbPassword)
     if dbPassword == enteredPassword:
         # T = int(time.time())
         Session = secrets.token_hex(16)
@@ -93,7 +84,7 @@ def login(j):
         db.commit()
         return {'OK': True, 'api_key': Session, 'User': row}
 
-    return {'OK': False, 'Error': "Wrong username or password"}
+    return {'OK': False, 'Error': "Wrong Password"}
 
 
 def send_username_by_email(Email, Username):
