@@ -1,13 +1,6 @@
-import mysql.connector
-from config import database
+from request_management import db_mysql
 
-mydb = mysql.connector.connect(
-    host=database['host'],
-    user=database['user'],
-    passwd=database['passwd'],
-    database=database['db_name']
-)
+db = db_mysql.db
+cursor = db_mysql.newCursor()
 
-mycursor = mydb.cursor()
-
-mycursor.execute("CREATE TABLE IF NOT EXISTS laboratorian (username char(50) ,FOREIGN KEY (username) REFERENCES users(username)   ON UPDATE CASCADE   ON DELETE RESTRICT)")
+cursor.execute("CREATE TABLE IF NOT EXISTS laboratorian (username char(50) ,FOREIGN KEY (username) REFERENCES users(username)   ON UPDATE CASCADE   ON DELETE RESTRICT)")
