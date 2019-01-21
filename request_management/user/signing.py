@@ -62,11 +62,11 @@ def login(j):
         return {'OK': False, 'Error': "not a valid json"}
 
     cursor.execute(
-        "SELECT * FROM users WHERE username = %s ;", (username,))
+        "SELECT  `username`, `name`, `phone_number`, `email`, `birth_year`, `postal_code`, `address`, `weight`, `gender`, `height`, `state`, `role` FROM users WHERE username = %s ;", (username,))
     db.commit()
     if cursor.rowcount <= 0:
         cursor.execute(
-            "SELECT * FROM users WHERE email = %s ;", (username,))
+            "SELECT `username`, `name`, `phone_number`, `email`, `birth_year`, `postal_code`, `address`, `weight`, `gender`, `height`, `state`, `role` FROM users WHERE email = %s ;", (username,))
         db.commit()
 
     if cursor.rowcount <= 0:
@@ -90,7 +90,7 @@ def login(j):
             (username, Session, SessionExp))
         db.commit()
         return {'OK': True, 'api_key': Session, 'User': row}
-        
+
     return {'OK': False, 'Error': "Wrong Password"}
 
 
