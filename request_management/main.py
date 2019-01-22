@@ -7,6 +7,6 @@ def main():
     try:
         httpTest.run(host='localhost', port=2228)
     except Exception as e:
-        print ("somthing went a whole wrong")
+        print ("somthing went a whole wrong"+str(e))
 
 
