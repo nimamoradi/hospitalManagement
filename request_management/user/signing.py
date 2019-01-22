@@ -52,6 +52,45 @@ def register(j):
     return dict
 
 
+def forget_password(j):
+    db = db_mysql.db
+    cursor = db_mysql.newCursor()
+
+    if 'email' in j:
+        email = j['email']
+    else:
+        return {'OK': False, 'Error': "not a valid json"}
+
+    cursor.execute('SELECT * FROM users WHERE email = %s ;', (email,))
+    print("     ")
+    print(cursor.rowcount)
+    db.commit()
+    if cursor.rowcount == 0:
+        return {'OK': False, 'Error': 'Email %s already exists in system ' % cursor.fetchone()['email']}
+
+    new_password = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    salt = secrets.token_hex(16)
+    temp = (salt + new_password)
+    hash = hashlib.sha512()
+    hash.update(temp.encode('utf-8'))
+    password = hash.hexdigest()
+
+    cursor.execute("UPDATE  users SET"
+                   " password = %s , salt = %s  WHERE email = %s",
+                   (password, salt, email))
+    db.commit()
+    try:
+        send_password_by_email(email, new_password)
+        pass
+    except smtplib.SMTPRecipientsRefused as e:
+        print("email not sent: Bad Recipient" + e)  # inform user
+        ok = False
+        error = "Email address not correct"
+
+    dict = {'OK': True}
+    return dict
+
+
 def login(j):
     db = db_mysql.db
     cursor = db_mysql.newCursor()
@@ -113,7 +152,12 @@ def send_username_by_email(Email, Username):
     Mail.mail(Email, "no-reply: Your hospital account username", body)
 
 
-def checkLogin(session):
+def send_password_by_email(Email, password):
+    body = "Your new password is: \n%s" % (password)
+    Mail.mail(Email, "no-reply: Your hospital account password", body)
+
+
+def check_login(session):
     t = datetime.datetime.now()
     cursor = db_mysql.newCursor()
     cursor.execute(

@@ -104,7 +104,12 @@ def send_username_by_email(Email, Username):
     Mail.mail(Email, "no-reply: Your hospital account username", body)
 
 
-def checkLogin(session):
+def send_password_by_email(Email, Username):
+    body = "Your username is: \n%s" % (send_password_by_email())
+    Mail.mail(Email, "no-reply: Your hospital account username", body)
+
+
+def check_login(session):
     t = datetime.datetime.now()
     cursor = db_mysql.newCursor()
     cursor.execute(

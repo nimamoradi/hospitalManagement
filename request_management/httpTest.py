@@ -77,6 +77,19 @@ def index():
     return dict  # send api result as json, no need to encode
 
 
+@route('/forget', method=['POST', 'OPTIONS'])
+def index():
+    # TODO XSS safe the input
+    # print("request" + str(request.json))
+    if not request.json:
+        return "error: not a json"
+
+    j = request.json
+    dict = signing.forget_password(j)
+
+    return dict  # send api result as json, no need to encode
+
+
 @route('/edit_profile', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
@@ -86,7 +99,6 @@ def index():
 
     dict = profile.edit_profile(j)
     return dict  # send api result as json, no need to encode
-
 
 
 @route('/json', method=['POST', 'OPTIONS'])
@@ -118,7 +130,7 @@ def do_upload():
     caption = request.forms.get('Caption')
 
     # check for login and account owner ship
-    Username = checkLogin(session)
+    Username = check_login(session)
     if Username == False:
         return {'OK': False, 'Error': "You are not logged in"}
 
