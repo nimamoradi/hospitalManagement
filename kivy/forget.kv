@@ -1,0 +1,23 @@
+# Reference forget.py
+#: import main forget
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+
+<Forget>:
+    BoxLayout:
+        size_hint_y: None
+        email_text_input: email
+        padding: [10,0,50,500]
+        spacing: 50
+        BoxLayout:
+            size_hint_y: None
+            height: "40dp"
+            Label:
+                text: 'Email'
+            TextInput:
+                id: email
+        BoxLayout:
+            size_hint_y: None
+            height: "40dp"       
+            Button:
+                text: 'Done'

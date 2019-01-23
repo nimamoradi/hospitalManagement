@@ -1,0 +1,98 @@
+# Reference studentdb.py
+#: import main studentdb
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+
+StudentDB:
+
+<StudentDB>:
+    orientation: "vertical"
+    user_name_log_text_input: user_name_log
+    password_log_text_input: password_log
+    name_text_input: name
+    password_text_input: password
+    user_name_text_input: user_name
+    telephone_text_input: telephone
+    email_text_input: email
+    padding: [10,100,10,10]
+    spacing: 30
+    BoxLayout:
+        size_hint_y: None
+        padding: [10,200,10,10]
+        height: "40dp"
+        Label:
+            text: "Login"
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: "User Name"
+        TextInput:
+            id: user_name_log
+        Label:
+            text: "Password"
+        TextInput:
+            id: password_log
+ 
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Button:
+            text: "Login"
+            size_hint_x: 15
+            on_press: root.submit_student()
+        Button:
+            text: "Forget"
+            size_hint_x: 15
+            on_press: root.delete_student()
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: "User Name"
+        TextInput:
+            id: user_name
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Name'
+
+        TextInput:
+            id: name
+
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Password'
+
+        TextInput:
+            id: password
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Telephone'
+
+        TextInput:
+            id: telephone
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Email'
+        TextInput:
+            id: email
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"       
+        Button:
+            text: 'Done'
+            size_hint_x: 15
+
+
