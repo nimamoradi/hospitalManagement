@@ -11,6 +11,7 @@ from request_management import db_mysql
 from request_management.user.dotor_func import search_doctor
 from request_management.user.reservation import reserve_doctor_time
 import request_management.user.receptor
+import request_management.pharmcy.medicine
 
 print("hi server")
 
@@ -52,6 +53,46 @@ def index():
 def index():
     dict = confirmEmail()
     return dict
+
+
+@post('/search_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.search_medicine(j['name'])
+
+
+@post('/add_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.add_medicine(j['name'], j['price'], j['exp_date'])
+
+
+@post('/get_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.get_medicine(j['id'])
+
+
+@post('/update_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.update_medicine(j['id'], j['price'], j['exp_date'])
+
+
+@post('/get_medicine_bydate', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.get_medicine_bydate()
 
 
 @post('/reserve_doctor_time', method=['POST', 'OPTIONS'])
@@ -102,6 +143,23 @@ def index():
         return "error: not a json"
     j = request.json
     request_management.user.receptor.cancel_reserve(j['reserve_id'])
+    return request_management.user.receptor.see_doctor_times(j['username'])
+
+
+@post('/doctor_accept_reserve', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.dotor_func.accept_reserve(j['reserve_id'], j['username'])
+
+
+@post('/doctor_cancel_reserve', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    request_management.user.dotor_func.cancel_reserve(j['reserve_id'], j['username'])
     return request_management.user.receptor.see_doctor_times(j['username'])
 
 

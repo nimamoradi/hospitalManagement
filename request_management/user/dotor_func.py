@@ -1,4 +1,6 @@
-from request_management import db_mysql
+import request_management
+from request_management import db_mysql, Mail
+import request_management.user.receptor
 
 
 def search_doctor(docter_username):
@@ -14,9 +16,48 @@ def search_doctor(docter_username):
     else:
         for row in cursor:
             print(row)
-        dict = {'OK': True}
-        dict['doctors'] = cursor.fetchall()
-        return dict
 
-    dict = {'OK': false}
-    return dict
+        return {'OK': True, 'doctors': cursor.fetchall()}
+
+
+def cancel_reserve(reserve_id, doctor_username):
+    db = db_mysql.db
+    cursor = db_mysql.newCursor()
+    cursor.execute(
+        'SELECT  users.* FROM (patient LEFT OUTER JOIN users ON '
+        '(patient.username = users.username) ),'
+        'time_reserve LEFT OUTER JOIN time_request ON '
+        '(time_reserve.id = time_request.time_reserve_id) WHERE time_reserve.id = %s AND time_reserve.doctor_username = %s'
+        ' AND time_request.time_reserve_id IS NOT NULL;',
+        (reserve_id,))
+    user = cursor.fetchone()
+    print(user)
+    db.commit()
+    send_email(user['email'], user['name'] + ", your reservation is cancelled by doctor " + doctor_username)
+    request_management.user.receptor.cancel_reserve(reserve_id)
+    return {'OK': True}
+
+
+def accept_reserve(reserve_id, doctor_username):
+    db = db_mysql.db
+    cursor = db_mysql.newCursor()
+    cursor.execute(
+        'SELECT  users.* FROM (patient LEFT OUTER JOIN users ON '
+        '(patient.username = users.username) ),'
+        'time_reserve LEFT OUTER JOIN time_request ON '
+        '(time_reserve.id = time_request.time_reserve_id) WHERE time_reserve.id = %s '
+        'AND time_reserve.doctor_username = %s'
+        ' AND time_request.time_reserve_id IS NOT NULL;',
+        (reserve_id,))
+    user = cursor.fetchone()
+    print(user)
+    db.commit()
+    cursor.execute(
+        'UPDATE time_request set active=1 WHERE time_reserve_id= %s',(reserve_id,))
+    send_email(user['email'], user['name'] + ", your reservation is accepted by doctor " + doctor_username)
+
+    return {'OK': True}
+
+
+def send_email(Email, body):
+    Mail.mail(Email, "no-reply: Your hospital account reservations", body)

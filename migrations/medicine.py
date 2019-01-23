@@ -9,5 +9,5 @@ mydb = mysql.connector.connect(
 )
 
 mycursor = mydb.cursor()
-
-mycursor.execute("CREATE TABLE IF NOT EXISTS prescription (docter_id char(50) NOT NULL , id int(10) PRIMARY KEY NOT NULL , patient_id char(50) NOT NULL , `date` DATETIME);")
+mycursor.execute("CREATE TABLE IF NOT EXISTS medicine (id  int(10) PRIMARY KEY AUTO_INCREMENT,"
+               "name char(50) ,price int(12),exp_date DATETIME)")
