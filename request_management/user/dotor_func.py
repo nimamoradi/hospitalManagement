@@ -26,7 +26,9 @@ def cancel_reserve(reserve_id, doctor_username):
     cursor.execute(
         'SELECT  users.* FROM (patient LEFT OUTER JOIN users ON '
         '(patient.username = users.username) ),'
-        'time_request WHERE time_request.time_reserve_id = %s;',
+        'time_reserve LEFT OUTER JOIN time_request ON '
+        '(time_reserve.id = time_request.time_reserve_id) WHERE time_reserve.id = %s AND time_reserve.doctor_username = %s'
+        ' AND time_request.time_reserve_id IS NOT NULL;',
         (reserve_id,))
     user = cursor.fetchone()
     print(user)
@@ -42,13 +44,16 @@ def accept_reserve(reserve_id, doctor_username):
     cursor.execute(
         'SELECT  users.* FROM (patient LEFT OUTER JOIN users ON '
         '(patient.username = users.username) ),'
-        'time_request  WHERE time_request.time_reserve_id = %s;',
+        'time_reserve LEFT OUTER JOIN time_request ON '
+        '(time_reserve.id = time_request.time_reserve_id) WHERE time_reserve.id = %s '
+        'AND time_reserve.doctor_username = %s'
+        ' AND time_request.time_reserve_id IS NOT NULL;',
         (reserve_id,))
     user = cursor.fetchone()
     print(user)
     db.commit()
     cursor.execute(
-        'UPDATE time_request set active=1 WHERE time_reserve_id= %s', (reserve_id,))
+        'UPDATE time_request set active=1 WHERE time_reserve_id= %s',(reserve_id,))
     send_email(user['email'], user['name'] + ", your reservation is accepted by doctor " + doctor_username)
 
     return {'OK': True}
