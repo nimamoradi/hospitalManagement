@@ -1,0 +1,40 @@
+# Reference profileP.py
+#: import main profileP
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+ 
+ProfileP:
+ 
+<ProfileP>:
+    orientation: "vertical"
+    search_text_input: search
+    search_list: search_list_view
+    padding: 10
+    spacing: 10
+    BoxLayout:
+        size_hint_y: None
+        padding: [700,0,0,0]
+        height: "40dp"
+        Button:
+            text: "Edit"
+            size_hint_x: 15
+            on_press: root.edit()
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        spacing: 10
+        TextInput:
+            id: search
+        Button:
+            text: "Search"
+            on_press: root.edit()
+
+
+ 
+    # Define starting data and point to the ListItemButton
+    # in the Python code
+    ListView:
+        id: search_list_view
+        adapter:
+            ListAdapter(data=["test"], cls=main.SearchListButton)

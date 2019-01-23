@@ -5,7 +5,12 @@ import smtplib
 import string
 import time
 import datetime
+
+from rbac.roles import role_lookup
 from request_management import db_mysql, Mail
+
+from rbac.roles import roles
+
 
 def register(j):
     db = db_mysql.db
@@ -18,7 +23,7 @@ def register(j):
     email = j['email']
 
     if phone_number is None or email is None or name is None or role is None:
-         return {'OK': False, 'Error': "not a valid json"}
+        return {'OK': False, 'Error': "not a valid json"}
 
     salt = secrets.token_hex(16)
     temp = (salt + password)
@@ -27,18 +32,27 @@ def register(j):
     password = hash.hexdigest()
     # Password = hashlib.sha512(temp).hexdigest()
 
-
     cursor.execute('SELECT * FROM users WHERE email = %s ;', (email,))
     print("     ")
     print(cursor.rowcount)
     db.commit()
     if cursor.rowcount > 0:
         return {'OK': False, 'Error': 'Email %s already exists in system ' % cursor.fetchone()['email']}
-    
+
     username = make_username(role)
     cursor.execute("INSERT INTO users(username, password, salt, email, name, phone_number, role)"
                    + " VALUES ( %s, %s, %s, %s, %s, %s, %s);",
-                   (username, password, salt, email, name, phone_number, role, ))
+                   (username, password, salt, email, name, phone_number, role,))
+    if role == roles['doctor']:
+        cursor.execute("INSERT INTO doctor (username) VALUES (%s);",
+                       (username,))
+    if role == roles['patient']:
+        cursor.execute("INSERT INTO patient (username) VALUES (%s);",
+                       (username,))
+    if role == roles['receptor']:
+        cursor.execute("INSERT INTO receptor (username) VALUES (%s);",
+                       (username,))
+
     db.commit()
     try:
         send_username_by_email(email, username)
@@ -51,6 +65,46 @@ def register(j):
     dict = {'OK': True}
     return dict
 
+
+def forget_password(j):
+    db = db_mysql.db
+    cursor = db_mysql.newCursor()
+
+    if 'email' in j:
+        email = j['email']
+    else:
+        return {'OK': False, 'Error': "not a valid json"}
+
+    cursor.execute('SELECT * FROM users WHERE email = %s ;', (email,))
+    print("     ")
+    print(cursor.rowcount)
+    db.commit()
+    if cursor.rowcount == 0:
+        return {'OK': False, 'Error': 'Email %s already exists in system ' % cursor.fetchone()['email']}
+
+    new_password = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    salt = secrets.token_hex(16)
+    temp = (salt + new_password)
+    hash = hashlib.sha512()
+    hash.update(temp.encode('utf-8'))
+    password = hash.hexdigest()
+
+    cursor.execute("UPDATE  users SET"
+                   " password = %s , salt = %s  WHERE email = %s",
+                   (password, salt, email))
+    db.commit()
+    try:
+        send_password_by_email(email, new_password)
+        pass
+    except smtplib.SMTPRecipientsRefused as e:
+        print("email not sent: Bad Recipient" + e)  # inform user
+        ok = False
+        error = "Email address not correct"
+
+    dict = {'OK': True}
+    return dict
+
+
 def login(j):
     db = db_mysql.db
     cursor = db_mysql.newCursor()
@@ -61,24 +115,26 @@ def login(j):
         return {'OK': False, 'Error': "not a valid json"}
 
     cursor.execute(
-        "SELECT  `username`, `name`, `phone_number`, `email`, `birth_year`, `postal_code`, `address`, `weight`, `gender`, `height`, `state`, `role` FROM users WHERE username = %s ;", (username,))
+        "SELECT * FROM users WHERE username = %s ;", (username,))
     db.commit()
     if cursor.rowcount <= 0:
         cursor.execute(
-            "SELECT `username`, `name`, `phone_number`, `email`, `birth_year`, `postal_code`, `address`, `weight`, `gender`, `height`, `state`, `role` FROM users WHERE email = %s ;", (username,))
+            "SELECT * FROM users WHERE email = %s ;", (username,))
         db.commit()
 
     if cursor.rowcount <= 0:
-        return {'OK': False, 'Error': "User doesn't exist"}
+        return {'OK': False, 'Error': "Wrong username or password"}
 
     row = cursor.fetchone()
     salt = row['salt']
     dbPassword = row['password']
+    del row['password']
+    del row['salt']
 
     hash = hashlib.sha512()
     hash.update((salt + password).encode('utf-8'))
     enteredPassword = hash.hexdigest()
-    # print("enteredPassword " + enteredPassword + "\n" + "has " + dbPassword)
+
     if dbPassword == enteredPassword:
         # T = int(time.time())
         Session = secrets.token_hex(16)
@@ -90,7 +146,8 @@ def login(j):
         db.commit()
         return {'OK': True, 'api_key': Session, 'User': row}
 
-    return {'OK': False, 'Error': "Wrong Password"}
+    return {'OK': False, 'Error': "Wrong username or password"}
+
 
 def send_username_by_email(Email, Username):
     # design a user friendly email body
@@ -108,7 +165,13 @@ def send_username_by_email(Email, Username):
     body = "Your username is: \n%s" % (Username)
     Mail.mail(Email, "no-reply: Your hospital account username", body)
 
-def checkLogin(session):
+
+def send_password_by_email(Email, password):
+    body = "Your new password is: \n%s" % (password)
+    Mail.mail(Email, "no-reply: Your hospital account password", body)
+
+
+def check_login(session):
     t = datetime.datetime.now()
     cursor = db_mysql.newCursor()
     cursor.execute(
@@ -120,17 +183,18 @@ def checkLogin(session):
     username = row['username']
     return username
 
+
 def make_username(role):
     alphabet = string.ascii_lowercase
     db = db_mysql.db
     cursor = db_mysql.newCursor()
+    role = role_lookup(role)
     while True:
-        if role == "patient":
+        if "error" not in role:
             username = ''.join(secrets.choice(alphabet) for i in range(4))
-            username = "P%s" % username
-            print("hello new username is %s" % username )
-        # todo 
-
+            username = role[:1].join("%s" % username)
+            print("hello new username is %s" % username)
+        # todo
 
         cursor.execute(
             'SELECT * FROM users WHERE username = %s ;', (username,))
@@ -140,4 +204,3 @@ def make_username(role):
             break
 
     return username
-    

@@ -1,12 +1,17 @@
 # -*- coding: utf-8 -*-
-import binascii
-import codecs
-import datetime
 import os
 import string
 from bottle import Bottle, get, post, route, run, template, request, hook, response
-from request_management import db_mysql, Mail
-from request_management.user import signing
+
+import request_management
+from request_management.user import signing, profile
+# import cronJobs
+# import botManager
+from request_management import db_mysql
+from request_management.user.dotor_func import search_doctor
+from request_management.user.reservation import reserve_doctor_time
+import request_management.user.receptor
+import request_management.pharmcy.medicine
 
 print("hi server")
 
@@ -27,9 +32,6 @@ def enable_cors():
 @route('/')
 def index():
     return 'goto <a href="./hello/mamad">hello page</a>'
-
-
-indx = 0
 
 
 @get('/ip')  # route == get1
@@ -53,13 +55,119 @@ def index():
     return dict
 
 
+@post('/search_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.search_medicine(j['name'])
+
+
+@post('/add_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.add_medicine(j['name'], j['price'], j['exp_date'])
+
+
+@post('/get_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.get_medicine(j['id'])
+
+
+@post('/update_medicine', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.update_medicine(j['id'], j['price'], j['exp_date'])
+
+
+@post('/get_medicine_bydate', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmcy.medicine.get_medicine_bydate()
+
+
+@post('/reserve_doctor_time', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    if 'reserve_id' in j:
+        dict = reserve_doctor_time(j['reserve_id'], j['patient_username'])
+    else:
+        return "error: missing param"
+    return dict
+
+
+@post('/search_doctor', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    if 'username' in j and len(j['username']) > 2:
+        dict = search_doctor(j['username'])
+    else:
+        return "error: missing param"
+    return dict
+
+
+@post('/see_doctor_times', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    dict = request_management.user.reservation.see_doctor_times(j['username'])
+    return dict
+
+
+@post('/see_doctor_times_receptor', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    dict = request_management.user.receptor.see_doctor_times(j['username'])
+    return dict
+
+
+@post('/cancel_reserve', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    request_management.user.receptor.cancel_reserve(j['reserve_id'])
+    return request_management.user.receptor.see_doctor_times(j['username'])
+
+
+@post('/doctor_accept_reserve', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.dotor_func.accept_reserve(j['reserve_id'], j['username'])
+
+
+@post('/doctor_cancel_reserve', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    request_management.user.dotor_func.cancel_reserve(j['reserve_id'], j['username'])
+    return request_management.user.receptor.see_doctor_times(j['username'])
+
+
 @route('/login', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
         return "error: not a json"
-
     j = request.json
-
     dict = signing.login(j)
     return dict  # send api result as json, no need to encode
 
@@ -74,6 +182,29 @@ def index():
     j = request.json
     dict = signing.register(j)
 
+    return dict  # send api result as json, no need to encode
+
+
+@route('/forget', method=['POST', 'OPTIONS'])
+def index():
+    # TODO XSS safe the input
+    # print("request" + str(request.json))
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    dict = signing.forget_password(j)
+
+    return dict  # send api result as json, no need to encode
+
+
+@route('/edit_profile', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+
+    j = request.json
+
+    dict = profile.edit_profile(j)
     return dict  # send api result as json, no need to encode
 
 
@@ -98,45 +229,45 @@ def index(user):
     return a
 
 
-@route('/uploadPhoto', method=['POST', 'OPTIONS'])
-def do_upload():
-    account_name = request.forms.get('account_name')
-    session = request.forms.get('Session')
-    time_stamp = request.forms.get('TimeStamp')
-    caption = request.forms.get('Caption')
-
-    # check for login and account owner ship
-    Username = checkLogin(session)
-    if Username == False:
-        return {'OK': False, 'Error': "You are not logged in"}
-
-    if not check_account_ownership(Username, account_name):
-        return {'OK': False, 'Error': "Not your Account"}
-
-    try:
-        upload = request.files.get('upload')
-        name, ext = os.path.splitext(upload.filename)
-        if ext not in ('.jpg'):
-            return "File extension not allowed."
-        # check if folder exists
-        if not os.path.exists("./Photos"):
-            os.makedirs("./Photos")
-        # generate a random string for files with same name
-        rand = ''.join([random.choice(string.ascii_letters + string.digits)
-                        for n in range(10)])
-        file_path = "Photos/{file}".format(file=Username +
-                                                "-" + rand + upload.filename)
-        upload.save(file_path)
-
-        cursor = db_mysql.newCursor()
-        cursor.execute(
-            "INSERT INTO 'Photos'('Username', 'PhotoName', 'PhotoCaption', 'PostTime') VALUES (%s, %s, %s, %s)",
-            (Username, file_path, caption, time_stamp))
-
-    except Exception as e:
-        return "somthing went wrong"
-
-    return "File successfully saved "
+# @route('/uploadPhoto', method=['POST', 'OPTIONS'])
+# def do_upload():
+#     account_name = request.forms.get('account_name')
+#     session = request.forms.get('Session')
+#     time_stamp = request.forms.get('TimeStamp')
+#     caption = request.forms.get('Caption')
+#
+#     # check for login and account owner ship
+#     Username = check_login(session)
+#     if Username == False:
+#         return {'OK': False, 'Error': "You are not logged in"}
+#
+#     if not check_account_ownership(Username, account_name):
+#         return {'OK': False, 'Error': "Not your Account"}
+#
+#     try:
+#         upload = request.files.get('upload')
+#         name, ext = os.path.splitext(upload.filename)
+#         if ext not in ('.jpg'):
+#             return "File extension not allowed."
+#         # check if folder exists
+#         if not os.path.exists("./Photos"):
+#             os.makedirs("./Photos")
+#         # generate a random string for files with same name
+#         rand = ''.join([random.choice(string.ascii_letters + string.digits)
+#                         for n in range(10)])
+#         file_path = "Photos/{file}".format(file=Username +
+#                                                 "-" + rand + upload.filename)
+#         upload.save(file_path)
+#
+#         cursor = db_mysql.newCursor()
+#         cursor.execute(
+#             "INSERT INTO 'Photos'('Username', 'PhotoName', 'PhotoCaption', 'PostTime') VALUES (%s, %s, %s, %s)",
+#             (Username, file_path, caption, time_stamp))
+#
+#     except Exception as e:
+#         return "somthing went wrong"
+#
+#     return "File successfully saved "
 
 
 def confirmEmail():
@@ -164,8 +295,6 @@ def confirmEmail():
 
     dict = {'OK': True}
     return dict
-
-
 
 #
 # def check_account_ownership(username, account_name):

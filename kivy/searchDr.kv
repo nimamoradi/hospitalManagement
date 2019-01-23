@@ -1,0 +1,27 @@
+# Reference searchDr.py
+#: import main searchDr
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+ 
+SearchDr:
+ 
+<SearchDr>:
+    orientation: "vertical"
+    search_list: search_list_view
+    padding: 10
+    spacing: 10
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        spacing: 10
+        Label:
+            text: "Result"
+
+
+ 
+    # Define starting data and point to the ListItemButton
+    # in the Python code
+    ListView:
+        id: search_list_view
+        adapter:
+            ListAdapter(data=["test"], cls=main.SearchDrListButton)

@@ -11,4 +11,8 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 mycursor.execute(
-    "CREATE TABLE IF NOT EXISTS doctor (username char(50) ,FOREIGN KEY (username) REFERENCES users(username)   ON UPDATE CASCADE   ON DELETE RESTRICT)")
+    "CREATE TABLE IF NOT EXISTS time_reserve (id  int(10)"
+    " PRIMARY KEY AUTO_INCREMENT,hour int(4),week_day char(20),"
+    " doctor_username char(50) ,FOREIGN KEY (doctor_username) "
+    "REFERENCES doctor(username),"
+    " price int(12));")
