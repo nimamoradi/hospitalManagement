@@ -1,0 +1,125 @@
+# Reference edit.py
+#: import main edit
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+
+Edit:
+
+<Edit>:
+    orientation: "vertical"
+    name_text_input: name
+    password_text_input: password
+    telephone_text_input: telephone
+    email_text_input: email
+    padding: [10,10,10,10]
+    spacing: 5
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: "Edit"
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Name'
+
+        TextInput:
+            id: name
+
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Password'
+
+        TextInput:
+            id: password
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Telephone'
+
+        TextInput:
+            id: telephone
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Email'
+        TextInput:
+            id: email
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Address'
+
+        TextInput:
+            id: address
+
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Code'
+
+        TextInput:
+            id: code
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'YearBirth'
+
+        TextInput:
+            id: yearbirth
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Age'
+        TextInput:
+            id: age
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Sex'
+
+        TextInput:
+            id: sex
+
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Hight'
+
+        TextInput:
+            id: hight
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Label:
+            text: 'Weight'
+
+        TextInput:
+            id: weight
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"       
+        Button:
+            text: 'Done'
+            size_hint_x: 15

@@ -1,0 +1,46 @@
+# Reference patient.py
+#: import main patient
+#: import ListAdapter kivy.adapters.listadapter.ListAdapter
+#: import ListItemButton kivy.uix.listview.ListItemButton
+ 
+Patient:
+ 
+<Patient>:
+    orientation: "vertical"
+    search_text_input: search
+    padding: [10,0,10,470]
+    spacing: 20
+
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        Button:
+            text: "Edit"
+            size_hint_x: 15
+            on_press: root.edit()
+        Button:
+            text: "Visit"
+            size_hint_x: 15
+            on_press: root.edit()
+
+        Button:
+            text: "Inbox"
+            size_hint_x: 15
+            on_press: root.edit()
+
+        Button:
+            text: "Sent"
+            size_hint_x: 15
+            on_press: root.edit()
+
+ 
+    BoxLayout:
+        size_hint_y: None
+        height: "40dp"
+        spacing: 10
+        TextInput:
+            id: search
+        Button:
+            text: "Search"
+            on_press: root.edit()
+

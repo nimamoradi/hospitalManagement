@@ -1,0 +1,111 @@
+<Submit>:
+
+    BoxLayout:
+        id: login_layout
+        orientation: 'vertical'
+        padding: [50,0,50,50]
+        spacing: 10
+
+        Label:
+            text: 'Submition'
+            font_size: 28
+
+        BoxLayout:
+            orientation: 'vertical'
+            name: 'DropDown'
+            Label:
+                text: 'Type'
+                font_size: 18
+                halign: 'left'
+                text_size: root.width-20, 20
+            Button:
+                id: btn
+                text: ' '
+                on_release: dropdown.open(self)
+                size_hint_y: None
+                height: '48dp'
+            BoxLayout:
+                orientation: 'vertical'
+                DropDown:
+                    id: dropdown
+                    on_select: btn.text = 'Selected value: {}'.format(args[1])
+                    Button:
+                        text: 'Value A'
+                        size_hint_y: None
+                        height: '48dp'
+                        on_release: dropdown.select('A')
+
+                    Button:
+                        text: 'Value B'
+                        size_hint_y: None
+                        height: '48dp'
+                        on_release: dropdown.select('B')
+
+                    Button:
+                        text: 'Value C'
+                        size_hint_y: None
+                        height: '48dp'
+                        on_release: dropdown.select('C')  
+        BoxLayout:
+            orientation: 'vertical'
+
+            Label:
+                text: 'Name'
+                font_size: 18
+                halign: 'left'
+                text_size: root.width-20, 20
+
+            TextInput:
+                id: name
+                multiline:False
+                font_size: 28
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Password'
+                halign: 'left'
+                font_size: 18
+                text_size: root.width-20, 20
+
+            TextInput:
+                id: password
+                multiline:False
+                password:True
+                font_size: 28
+
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Telephone'
+                halign: 'left'
+                font_size: 18
+                text_size: root.width-20, 20
+
+            TextInput:
+                id: telephone
+                multiline:False
+                font_size: 28
+        BoxLayout:
+            orientation: 'vertical'
+            Label:
+                text: 'Email'
+                halign: 'left'
+                font_size: 18
+                text_size: root.width-20, 20
+
+            TextInput:
+                id: email
+                multiline:False
+                font_size: 28
+        BoxLayout:
+            id: login_layout
+            orientation: 'vertical'
+            padding: [50,0,50,100]
+            spacing: 10        
+            Button:
+                text: 'Done'
+                font_size: 24
+
+            
+        
