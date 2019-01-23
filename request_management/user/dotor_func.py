@@ -29,7 +29,7 @@ def cancel_reserve(reserve_id, doctor_username):
         'time_reserve LEFT OUTER JOIN time_request ON '
         '(time_reserve.id = time_request.time_reserve_id) WHERE time_reserve.id = %s AND time_reserve.doctor_username = %s'
         ' AND time_request.time_reserve_id IS NOT NULL;',
-        (reserve_id,))
+        (reserve_id,doctor_username))
     user = cursor.fetchone()
     print(user)
     db.commit()
@@ -48,7 +48,7 @@ def accept_reserve(reserve_id, doctor_username):
         '(time_reserve.id = time_request.time_reserve_id) WHERE time_reserve.id = %s '
         'AND time_reserve.doctor_username = %s'
         ' AND time_request.time_reserve_id IS NOT NULL;',
-        (reserve_id,))
+        (reserve_id,doctor_username))
     user = cursor.fetchone()
     print(user)
     db.commit()
