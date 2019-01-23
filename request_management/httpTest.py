@@ -2,12 +2,15 @@
 import os
 import string
 from bottle import Bottle, get, post, route, run, template, request, hook, response
+
+import request_management
 from request_management.user import signing, profile
 # import cronJobs
 # import botManager
 from request_management import db_mysql
 from request_management.user.dotor_func import search_doctor
-from request_management.user.reservation import reserve_doctor_time, see_doctor_times
+from request_management.user.reservation import reserve_doctor_time
+import request_management.user.receptor
 
 print("hi server")
 
@@ -57,7 +60,7 @@ def index():
         return "error: not a json"
     j = request.json
     if 'reserve_id' in j:
-        dict = reserve_doctor_time(j['reserve_id'],j['patient_username'])
+        dict = reserve_doctor_time(j['reserve_id'], j['patient_username'])
     else:
         return "error: missing param"
     return dict
@@ -80,17 +83,33 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    dict = see_doctor_times(j['username'])
+    dict = request_management.user.reservation.see_doctor_times(j['username'])
     return dict
+
+
+@post('/see_doctor_times_receptor', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    dict = request_management.user.receptor.see_doctor_times(j['username'])
+    return dict
+
+
+@post('/cancel_reserve', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    request_management.user.receptor.cancel_reserve(j['reserve_id'])
+    return request_management.user.receptor.see_doctor_times(j['username'])
 
 
 @route('/login', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
         return "error: not a json"
-
     j = request.json
-
     dict = signing.login(j)
     return dict  # send api result as json, no need to encode
 
