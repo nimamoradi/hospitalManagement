@@ -1,6 +1,13 @@
-from request_management import db_mysql
+import mysql.connector
+from config import database
 
-db = db_mysql.db
-cursor = db_mysql.newCursor()
+mydb = mysql.connector.connect(
+    host=database['host'],
+    user=database['user'],
+    passwd=database['passwd'],
+    database=database['db_name']
+)
 
-cursor.execute("CREATE TABLE IF NOT EXISTS prescription (docter_id char(50) NOT NULL , id int(10) PRIMARY KEY NOT NULL , patient_id char(50) NOT NULL , `date` DATETIME);")
+mycursor = mydb.cursor()
+
+mycursor.execute("CREATE TABLE IF NOT EXISTS prescription (docter_id char(50) NOT NULL , id int(10) PRIMARY KEY NOT NULL , patient_id char(50) NOT NULL , `date` DATETIME);")
