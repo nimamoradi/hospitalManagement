@@ -5,7 +5,11 @@ import smtplib
 import string
 import time
 import datetime
+
+from rbac.roles import role_lookup
 from request_management import db_mysql, Mail
+
+from rbac.roles import roles
 
 
 def register(j):
@@ -38,7 +42,17 @@ def register(j):
     username = make_username(role)
     cursor.execute("INSERT INTO users(username, password, salt, email, name, phone_number, role)"
                    + " VALUES ( %s, %s, %s, %s, %s, %s, %s);",
-                   (username, password, salt, email, name, phone_number, role, ))
+                   (username, password, salt, email, name, phone_number, role,))
+    if role == roles['doctor']:
+        cursor.execute("INSERT INTO doctor (username) VALUES (%s);",
+                       (username,))
+    if role == roles['patient']:
+        cursor.execute("INSERT INTO patient (username) VALUES (%s);",
+                       (username,))
+    if role == roles['receptor']:
+        cursor.execute("INSERT INTO receptor (username) VALUES (%s);",
+                       (username,))
+
     db.commit()
     try:
         send_username_by_email(email, username)
@@ -174,10 +188,11 @@ def make_username(role):
     alphabet = string.ascii_lowercase
     db = db_mysql.db
     cursor = db_mysql.newCursor()
+    role = role_lookup(role)
     while True:
-        if role == "patient":
+        if "error" not in role:
             username = ''.join(secrets.choice(alphabet) for i in range(4))
-            username = "P%s" % username
+            username = role[:1].join("%s" % username)
             print("hello new username is %s" % username)
         # todo
 
