@@ -13,7 +13,7 @@ mycursor = mydb.cursor()
 mycursor.execute(
     "CREATE TABLE IF NOT EXISTS time_request (id  int(10) PRIMARY KEY AUTO_INCREMENT, "
     "time_reserve_id  int(10) ,FOREIGN KEY (time_reserve_id) "
-    "REFERENCES time_reserve(id),payed tinyint(1),"
+    "REFERENCES time_reserve(id),payed tinyint(1),active tinyint(1) default 0,"
     "patient_username char(50) ,FOREIGN KEY (patient_username) "
     "REFERENCES patient(username));")
 
