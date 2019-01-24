@@ -9,8 +9,8 @@ from request_management import db_mysql, Mail
 
 
 def edit_profile(j):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['patient']
+    cursor = db_mysql.newCursor("patient")
 
     api_key = j['api_key']
     name = j['name']

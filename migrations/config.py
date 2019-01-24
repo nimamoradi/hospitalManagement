@@ -43,8 +43,8 @@ database_users['patient'] = {
         {"action": "SELECT",
             "table": ["time_reserve"]
         },
-        {"action": "SELECT, INSERT",
-         "table": ["time_request"]
+        {"action": "SELECT, INSERT, UPDATE",
+         "table": ["time_request", "users", "patient"]
         }
     ]
 }
