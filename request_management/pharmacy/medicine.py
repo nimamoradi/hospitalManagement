@@ -47,7 +47,8 @@ def get_prescription_details(items):
     db = db_mysql.db_users['pharmacy']
     cursor = db_mysql.newCursor("pharmacy")
 
-    sql = "select `id`, `name`, `price`, unix_timestamp(exp_date) from medicine where id in (%s)" % (', '.join(str(id) for id in items))
+    sql = "select `id`, `name`, `price`, unix_timestamp(exp_date) from medicine where id in (%s)" % (
+        ', '.join(str(id) for id in items))
 
     cursor.execute(sql)
     db.commit()
@@ -73,9 +74,22 @@ def get_medicine_bydate():
     db.commit()
     return {'OK': True, 'medicines': cursor.fetchall()}
 
-# def json_serial(obj):
-#     """JSON serializer for objects not serializable by default json code"""
 
-#     if isinstance(obj, datetime):
-#         return obj.isoformat()
-#     return obj
+def get_user_prescription(patient_username):
+    db = db_mysql.db_users['pharmacy']
+    cursor = db_mysql.newCursor("pharmacy")
+
+    cursor.execute(
+        'SELECT patient_id, medicine.Name ,unix_timestamp(prescription.date)'
+        ' FROM prescription_item INNER JOIN prescription '
+        'ON prescription.id = prescription_item.prescription_id'
+        ' INNER JOIN medicine ON medicine.id = prescription_item.medicine_id '
+        'WHERE prescription.patient_id = %s AND prescription.prescribed = 0',
+        (patient_username,))
+    prescriptions = cursor.fetchall()
+    print(prescriptions)
+    cursor.execute(
+        'UPDATE prescription SET prescribed = 1 where prescription.patient_id =%s',
+        (patient_username,))
+    db.commit()
+    return {'OK': True, 'prescription': prescriptions}

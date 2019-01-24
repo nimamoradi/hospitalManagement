@@ -207,6 +207,14 @@ def index():
     return request_management.user.dotor_func.get_medicine_history(j['patient_username'])
 
 
+@post('/get_user_prescription', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmacy.medicine.get_user_prescription(j['patient_username'])
+
+
 @route('/login', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
