@@ -139,7 +139,7 @@ def login(j):
         # T = int(time.time())
         Session = secrets.token_hex(16)
         cursor = db_mysql.newCursor()
-        SessionExp = datetime.datetime.now() + datetime.timedelta(days=2)
+        SessionExp = datetime.datetime.now() + datetime.timedelta(days=50)
         cursor.execute(
             "INSERT INTO api_keys (username, api_key, exp_date) VALUES (%s, %s, %s);",
             (username, Session, SessionExp))
@@ -151,16 +151,6 @@ def login(j):
 
 def send_username_by_email(Email, Username):
     # design a user friendly email body
-
-    # db = db_mysql.db
-    # cursor = db_mysql.newCursor()
-    # import datetime
-    # expTime = datetime.datetime.now() + datetime.timedelta(days=1)
-    # Token = secrets.token_hex(16)
-    # cursor.execute(
-    #     "INSERT INTO ActiviateTokens (Token, TokenExp, Username) VALUES (%s, %s, %s);",
-    #     (Token, expTime, Username))
-    # db.commit()
 
     body = "Your username is: \n%s" % (Username)
     Mail.mail(Email, "no-reply: Your hospital account username", body)
