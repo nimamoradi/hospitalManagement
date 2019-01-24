@@ -1,7 +1,8 @@
 roles = {
     "patient": "patient",
     "doctor": "doctor",
-    "receptor": "receptor"
+    "receptor": "receptor",
+    "admin": "admin"
 
 }
 

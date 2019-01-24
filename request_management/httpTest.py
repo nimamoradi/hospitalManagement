@@ -154,6 +154,24 @@ def index():
     return request_management.user.dotor_func.accept_reserve(j['reserve_id'], j['username'])
 
 
+@post('/add_doctor_time', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.receptor.add_doctor_time(
+        j['doctor_username'], j['week_day'], j['hour'], j['price'])
+
+
+@post('/delete_doctor_time', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.receptor.delete_doctor_time(
+        j['id'])
+
+
 @post('/doctor_prescribe', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
