@@ -33,21 +33,27 @@ database_users['pharmacy'] = {
         }
     ]
 }
+
+database_users['patient'] = {
+    "host": "localhost",
+    "user": "root",
+    "passwd": "",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT",
+            "table": ["time_reserve"]
+         },
+        {"action": "INSERT",
+         "table": ["time_request"]
+         }
+    ]
+}
+
 # database_users['doctor'] = {
 #     "host": "localhost",
 #     "user": "root",
 #     "passwd": "",
 #     "db_name": "hospital",
-#     "grants": [
-
-#     ]
-# }
-
-# database_users['patient'] = {
-#     "host": "localhost",
-#     "user": "root",
-#     "passwd": "",
-#     "db_name": "hospital"
 #     "grants": [
 
 #     ]
