@@ -11,7 +11,7 @@ from request_management import db_mysql
 from request_management.user.dotor_func import search_doctor
 from request_management.user.reservation import reserve_doctor_time
 import request_management.user.receptor
-import request_management.pharmcy.medicine
+import request_management.pharmacy.medicine
 
 print("hi server")
 
@@ -49,10 +49,10 @@ def index():
 #     return {'OK': True}
 
 # تایید کردن اکانت توسط لینکی که ایمیل شده
-@get('/confirm')
-def index():
-    dict = confirmEmail()
-    return dict
+# @get('/confirm')
+# def index():
+#     dict = confirmEmail()
+#     return dict
 
 
 @post('/search_medicine', method=['POST', 'OPTIONS'])
@@ -60,7 +60,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.search_medicine(j['name'])
+    return request_management.pharmacy.medicine.search_medicine(j['name'])
 
 
 @post('/add_medicine', method=['POST', 'OPTIONS'])
@@ -68,7 +68,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.add_medicine(j['name'], j['price'], j['exp_date'])
+    return request_management.pharmacy.medicine.add_medicine(j['name'], j['price'], j['exp_date'])
 
 
 @post('/get_medicine', method=['POST', 'OPTIONS'])
@@ -76,7 +76,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.get_medicine(j['id'])
+    return request_management.pharmacy.medicine.get_medicine(j['id'])
 
 
 @post('/update_medicine', method=['POST', 'OPTIONS'])
@@ -84,7 +84,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.update_medicine(j['id'], j['price'], j['exp_date'])
+    return request_management.pharmacy.medicine.update_medicine(j['id'], j['price'], j['exp_date'])
 
 
 @post('/get_medicine_bydate', method=['POST', 'OPTIONS'])
@@ -92,7 +92,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.get_medicine_bydate()
+    return request_management.pharmacy.medicine.get_medicine_bydate()
 
 
 @post('/reserve_doctor_time', method=['POST', 'OPTIONS'])
