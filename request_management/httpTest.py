@@ -172,6 +172,14 @@ def index():
     return request_management.user.receptor.see_doctor_times(j['username'])
 
 
+@post('/get_patient_history', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.dotor_func.get_medicine_history(j['patient_username'])
+
+
 @route('/login', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:

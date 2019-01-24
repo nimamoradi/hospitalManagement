@@ -78,5 +78,17 @@ def prescribe(patient_username, doctor_username, items):
     return {'OK': True}
 
 
+def get_medicine_history(patient_username):
+    db = db_mysql.db
+    cursor = db_mysql.newCursor()
+    cursor.execute(
+        'SELECT patient_id, medicine.Name ,unix_timestamp(prescription.date) FROM prescription_item INNER JOIN prescription ON prescription.id = prescription_item.prescription_id INNER JOIN medicine ON medicine.id = prescription_item.medicine_id WHERE prescription.patient_id = %s',
+        (patient_username,))
+    user = cursor.fetchall()
+    print(user)
+    db.commit()
+    return {'OK': True, 'prescription': user}
+
+
 def send_email(Email, body):
     Mail.mail(Email, "no-reply: Your hospital account reservations", body)
