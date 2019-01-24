@@ -14,7 +14,7 @@ database_users['signing'] = {
     "db_name": "hospital",
     "grants": [
         {"action": "SELECT, UPDATE, INSERT",
-            "table": ["users", "patient", "doctor", "receptor"]
+            "table": ["users", "patient", "doctor", "receptor", "api_keys"]
         }
     ]
 }
