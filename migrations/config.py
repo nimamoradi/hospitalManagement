@@ -36,16 +36,16 @@ database_users['pharmacy'] = {
 
 database_users['patient'] = {
     "host": "localhost",
-    "user": "root",
-    "passwd": "",
+    "user": "patient",
+    "passwd": "dkskmvmvdl",
     "db_name": "hospital",
     "grants": [
         {"action": "SELECT",
             "table": ["time_reserve"]
-         },
-        {"action": "INSERT",
+        },
+        {"action": "SELECT, INSERT",
          "table": ["time_request"]
-         }
+        }
     ]
 }
 
