@@ -43,6 +43,17 @@ def get_medicine(id):
     return {'OK': True, 'medicine': cursor.fetchall()}
 
 
+def get_prescription_details(items):
+    db = db_mysql.db_users['pharmacy']
+    cursor = db_mysql.newCursor("pharmacy")
+
+    sql = "select `id`, `name`, `price`, unix_timestamp(exp_date) from medicine where id in (%s)" % (', '.join(str(id) for id in items))
+
+    cursor.execute(sql)
+    db.commit()
+    return {'OK': True, 'prescription': cursor.fetchall()}
+
+
 def update_medicine(id, price, exp_date):
     db = db_mysql.db_users['pharmacy']
     cursor = db_mysql.newCursor("pharmacy")
@@ -60,8 +71,7 @@ def get_medicine_bydate():
     cursor.execute(
         'SELECT `id`, `name`, `price`, unix_timestamp(exp_date) FROM medicine order by exp_date;', ())
     db.commit()
-    return {'OK': True, 'medicines':  cursor.fetchall()}
-
+    return {'OK': True, 'medicines': cursor.fetchall()}
 
 # def json_serial(obj):
 #     """JSON serializer for objects not serializable by default json code"""

@@ -79,6 +79,15 @@ def index():
     return request_management.pharmacy.medicine.get_medicine(j['id'])
 
 
+@post('/get_prescription_details', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmacy.medicine.\
+        get_prescription_details(j['ids'])
+
+
 @post('/update_medicine', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
