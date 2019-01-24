@@ -154,6 +154,15 @@ def index():
     return request_management.user.dotor_func.accept_reserve(j['reserve_id'], j['username'])
 
 
+@post('/doctor_prescribe', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.dotor_func.prescribe(j['patient_id'], j['username'],
+                                                        j['prescription'])
+
+
 @post('/doctor_cancel_reserve', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
@@ -161,6 +170,14 @@ def index():
     j = request.json
     request_management.user.dotor_func.cancel_reserve(j['reserve_id'], j['username'])
     return request_management.user.receptor.see_doctor_times(j['username'])
+
+
+@post('/get_patient_history', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.dotor_func.get_medicine_history(j['patient_username'])
 
 
 @route('/login', method=['POST', 'OPTIONS'])
