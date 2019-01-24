@@ -35,11 +35,14 @@ def newCursor(db_user):
 
 
 # prepare a cursor object using cursor() method
-cursor = newCursor('signing')
+crsr = db.cursor(MySQLdb.cursors.DictCursor)
+crsr.execute('SET NAMES utf8;')
+crsr.execute('SET CHARACTER SET utf8;')
+crsr.execute('SET character_set_connection=utf8;')
 # execute SQL query using execute() method.
 print("dary")
-cursor.execute("SELECT VERSION()")
+crsr.execute("SELECT VERSION()")
 
 # Fetch a single row using fetchone() method.
-data = cursor.fetchone()
+data = crsr.fetchone()
 print(str(data))
