@@ -1,5 +1,5 @@
 from request_management.main import main as _req
-# from migrations.migrate import migrate
+from migrations.migrate import migrate
 
 
 def main():
