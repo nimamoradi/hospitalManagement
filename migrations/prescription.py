@@ -10,4 +10,8 @@ mydb = mysql.connector.connect(
 
 mycursor = mydb.cursor()
 
-mycursor.execute("CREATE TABLE IF NOT EXISTS prescription (docter_id char(50) NOT NULL , id int(10) PRIMARY KEY NOT NULL , patient_id char(50) NOT NULL , `date` DATETIME);")
+mycursor.execute("CREATE TABLE IF NOT EXISTS prescription (docter_id char(50) NOT NULL , "
+                 "id int(10) PRIMARY KEY NOT NULL AUTO_INCREMENT , "
+                 "patient_id char(50) NOT NULL , `date` DATETIME,FOREIGN KEY (docter_id) "
+                 "REFERENCES doctor(username),FOREIGN KEY (patient_id) "
+                 "REFERENCES patient(username));")
