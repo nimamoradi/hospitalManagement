@@ -35,7 +35,7 @@ def newCursor(db_user):
 
 
 # prepare a cursor object using cursor() method
-cursor = newCursor('login')
+cursor = newCursor('signing')
 # execute SQL query using execute() method.
 print("dary")
 cursor.execute("SELECT VERSION()")
