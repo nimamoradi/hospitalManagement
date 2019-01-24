@@ -3,7 +3,7 @@ from request_management.main import main as _req
 
 
 def main():
-    # migrate()
+    migrate()
     _req()
 
 
