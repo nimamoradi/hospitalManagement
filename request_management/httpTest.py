@@ -208,25 +208,25 @@ def index():
     return dict  # send api result as json, no need to encode
 
 
-@route('/json', method=['POST', 'OPTIONS'])
-def index():
-    if not request.json:
-        return "error: not a json"
+# @route('/json', method=['POST', 'OPTIONS'])
+# def index():
+#     if not request.json:
+#         return "error: not a json"
 
-    j = request.json
-    print("hello from json")
+#     j = request.json
+#     print("hello from json")
 
-    log = {'Name': 'Zara', 'title': "pro", 'Class': 'First'}
-    return log  # a # send api result as json, no need to encode
+#     log = {'Name': 'Zara', 'title': "pro", 'Class': 'First'}
+#     return log  # a # send api result as json, no need to encode
 
 
-@post('/json2/<user>')  # also we can get url parameters
-def index(user):
-    j = request.json
-    a = {'a': 0, 'b': 1}
-    a['title'] = j['title']
-    a['user'] = user  # use url parameters like this
-    return a
+# @post('/json2/<user>')  # also we can get url parameters
+# def index(user):
+#     j = request.json
+#     a = {'a': 0, 'b': 1}
+#     a['title'] = j['title']
+#     a['user'] = user  # use url parameters like this
+#     return a
 
 
 # @route('/uploadPhoto', method=['POST', 'OPTIONS'])
@@ -270,31 +270,31 @@ def index(user):
 #     return "File successfully saved "
 
 
-def confirmEmail():
-    Token = str(request.GET.get('token', '').strip())
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
-    cursor.execute(
-        "SELECT * FROM ActiviateTokens WHERE Token = %s;", (Token,))
-    if cursor.rowcount <= 0:
-        return {'OK': False, 'Error': 'Incorrect Token'}
+# def confirmEmail():
+#     Token = str(request.GET.get('token', '').strip())
+#     db = db_mysql.db
+#     cursor = db_mysql.newCursor()
+#     cursor.execute(
+#         "SELECT * FROM ActiviateTokens WHERE Token = %s;", (Token,))
+#     if cursor.rowcount <= 0:
+#         return {'OK': False, 'Error': 'Incorrect Token'}
 
-    row = cursor.fetchone()
-    Username = row['Username']
-    TokenExp = row['TokenExp']
-    import datetime
-    if TokenExp < datetime.datetime.now():
-        return {'OK': False, 'Error': 'Expired Token'}
+#     row = cursor.fetchone()
+#     Username = row['Username']
+#     TokenExp = row['TokenExp']
+#     import datetime
+#     if TokenExp < datetime.datetime.now():
+#         return {'OK': False, 'Error': 'Expired Token'}
 
-    cursor = db_mysql.newCursor()
-    cursor.execute(
-        "UPDATE Users SET state = True WHERE Username = %s", (Username,))
-    cursor.execute(
-        "DELETE FROM ActiviateTokens WHERE Username = %s", (Username,))
-    db.commit()
+#     cursor = db_mysql.newCursor()
+#     cursor.execute(
+#         "UPDATE Users SET state = True WHERE Username = %s", (Username,))
+#     cursor.execute(
+#         "DELETE FROM ActiviateTokens WHERE Username = %s", (Username,))
+#     db.commit()
 
-    dict = {'OK': True}
-    return dict
+#     dict = {'OK': True}
+#     return dict
 
 #
 # def check_account_ownership(username, account_name):

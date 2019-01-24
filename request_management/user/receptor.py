@@ -13,7 +13,7 @@ def see_doctor_times(docter_username):
     db.commit()
     if cursor.rowcount == 0:
         return {'OK': False,
-                'Error': 'no reserve with id found with doctor %s already exists in system ' % docter_username}
+                'Error': 'doctor %s not found' % docter_username}
     else:
         for row in cursor:
             print(row)
