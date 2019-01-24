@@ -11,7 +11,7 @@ from request_management import db_mysql
 from request_management.user.dotor_func import search_doctor
 from request_management.user.reservation import reserve_doctor_time
 import request_management.user.receptor
-import request_management.pharmcy.medicine
+import request_management.pharmacy.medicine
 
 print("hi server")
 
@@ -49,10 +49,10 @@ def index():
 #     return {'OK': True}
 
 # تایید کردن اکانت توسط لینکی که ایمیل شده
-@get('/confirm')
-def index():
-    dict = confirmEmail()
-    return dict
+# @get('/confirm')
+# def index():
+#     dict = confirmEmail()
+#     return dict
 
 
 @post('/search_medicine', method=['POST', 'OPTIONS'])
@@ -60,7 +60,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.search_medicine(j['name'])
+    return request_management.pharmacy.medicine.search_medicine(j['name'])
 
 
 @post('/add_medicine', method=['POST', 'OPTIONS'])
@@ -68,7 +68,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.add_medicine(j['name'], j['price'], j['exp_date'])
+    return request_management.pharmacy.medicine.add_medicine(j['name'], j['price'], j['exp_date'])
 
 
 @post('/get_medicine', method=['POST', 'OPTIONS'])
@@ -76,7 +76,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.get_medicine(j['id'])
+    return request_management.pharmacy.medicine.get_medicine(j['id'])
 
 
 @post('/update_medicine', method=['POST', 'OPTIONS'])
@@ -84,7 +84,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.update_medicine(j['id'], j['price'], j['exp_date'])
+    return request_management.pharmacy.medicine.update_medicine(j['id'], j['price'], j['exp_date'])
 
 
 @post('/get_medicine_bydate', method=['POST', 'OPTIONS'])
@@ -92,7 +92,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.pharmcy.medicine.get_medicine_bydate()
+    return request_management.pharmacy.medicine.get_medicine_bydate()
 
 
 @post('/reserve_doctor_time', method=['POST', 'OPTIONS'])
@@ -225,25 +225,25 @@ def index():
     return dict  # send api result as json, no need to encode
 
 
-@route('/json', method=['POST', 'OPTIONS'])
-def index():
-    if not request.json:
-        return "error: not a json"
+# @route('/json', method=['POST', 'OPTIONS'])
+# def index():
+#     if not request.json:
+#         return "error: not a json"
 
-    j = request.json
-    print("hello from json")
+#     j = request.json
+#     print("hello from json")
 
-    log = {'Name': 'Zara', 'title': "pro", 'Class': 'First'}
-    return log  # a # send api result as json, no need to encode
+#     log = {'Name': 'Zara', 'title': "pro", 'Class': 'First'}
+#     return log  # a # send api result as json, no need to encode
 
 
-@post('/json2/<user>')  # also we can get url parameters
-def index(user):
-    j = request.json
-    a = {'a': 0, 'b': 1}
-    a['title'] = j['title']
-    a['user'] = user  # use url parameters like this
-    return a
+# @post('/json2/<user>')  # also we can get url parameters
+# def index(user):
+#     j = request.json
+#     a = {'a': 0, 'b': 1}
+#     a['title'] = j['title']
+#     a['user'] = user  # use url parameters like this
+#     return a
 
 
 # @route('/uploadPhoto', method=['POST', 'OPTIONS'])
@@ -287,31 +287,31 @@ def index(user):
 #     return "File successfully saved "
 
 
-def confirmEmail():
-    Token = str(request.GET.get('token', '').strip())
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
-    cursor.execute(
-        "SELECT * FROM ActiviateTokens WHERE Token = %s;", (Token,))
-    if cursor.rowcount <= 0:
-        return {'OK': False, 'Error': 'Incorrect Token'}
+# def confirmEmail():
+#     Token = str(request.GET.get('token', '').strip())
+#     db = db_mysql.db
+#     cursor = db_mysql.newCursor()
+#     cursor.execute(
+#         "SELECT * FROM ActiviateTokens WHERE Token = %s;", (Token,))
+#     if cursor.rowcount <= 0:
+#         return {'OK': False, 'Error': 'Incorrect Token'}
 
-    row = cursor.fetchone()
-    Username = row['Username']
-    TokenExp = row['TokenExp']
-    import datetime
-    if TokenExp < datetime.datetime.now():
-        return {'OK': False, 'Error': 'Expired Token'}
+#     row = cursor.fetchone()
+#     Username = row['Username']
+#     TokenExp = row['TokenExp']
+#     import datetime
+#     if TokenExp < datetime.datetime.now():
+#         return {'OK': False, 'Error': 'Expired Token'}
 
-    cursor = db_mysql.newCursor()
-    cursor.execute(
-        "UPDATE Users SET state = True WHERE Username = %s", (Username,))
-    cursor.execute(
-        "DELETE FROM ActiviateTokens WHERE Username = %s", (Username,))
-    db.commit()
+#     cursor = db_mysql.newCursor()
+#     cursor.execute(
+#         "UPDATE Users SET state = True WHERE Username = %s", (Username,))
+#     cursor.execute(
+#         "DELETE FROM ActiviateTokens WHERE Username = %s", (Username,))
+#     db.commit()
 
-    dict = {'OK': True}
-    return dict
+#     dict = {'OK': True}
+#     return dict
 
 #
 # def check_account_ownership(username, account_name):

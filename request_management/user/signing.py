@@ -13,8 +13,8 @@ from rbac.roles import roles
 
 
 def register(j):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['signing']
+    cursor = db_mysql.newCursor("signing")
 
     name = j['name']
     phone_number = j['phone_number']
@@ -67,8 +67,8 @@ def register(j):
 
 
 def forget_password(j):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['signing']
+    cursor = db_mysql.newCursor("signing")
 
     if 'email' in j:
         email = j['email']
@@ -89,7 +89,7 @@ def forget_password(j):
     hash.update(temp.encode('utf-8'))
     password = hash.hexdigest()
 
-    cursor.execute("UPDATE  users SET"
+    cursor.execute("UPDATE users SET"
                    " password = %s , salt = %s  WHERE email = %s",
                    (password, salt, email))
     db.commit()
@@ -106,8 +106,8 @@ def forget_password(j):
 
 
 def login(j):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['signing']
+    cursor = db_mysql.newCursor("signing")
 
     username = j['username']
     password = j['password']
@@ -138,8 +138,8 @@ def login(j):
     if dbPassword == enteredPassword:
         # T = int(time.time())
         Session = secrets.token_hex(16)
-        cursor = db_mysql.newCursor()
-        SessionExp = datetime.datetime.now() + datetime.timedelta(days=2)
+        cursor = db_mysql.newCursor("signing")
+        SessionExp = datetime.datetime.now() + datetime.timedelta(days=50)
         cursor.execute(
             "INSERT INTO api_keys (username, api_key, exp_date) VALUES (%s, %s, %s);",
             (username, Session, SessionExp))
@@ -152,16 +152,6 @@ def login(j):
 def send_username_by_email(Email, Username):
     # design a user friendly email body
 
-    # db = db_mysql.db
-    # cursor = db_mysql.newCursor()
-    # import datetime
-    # expTime = datetime.datetime.now() + datetime.timedelta(days=1)
-    # Token = secrets.token_hex(16)
-    # cursor.execute(
-    #     "INSERT INTO ActiviateTokens (Token, TokenExp, Username) VALUES (%s, %s, %s);",
-    #     (Token, expTime, Username))
-    # db.commit()
-
     body = "Your username is: \n%s" % (Username)
     Mail.mail(Email, "no-reply: Your hospital account username", body)
 
@@ -172,8 +162,8 @@ def send_password_by_email(Email, password):
 
 
 def check_login(session):
-    t = datetime.datetime.now()
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['signing']
+    cursor = db_mysql.newCursor("signing")
     cursor.execute(
         "SELECT * FROM api_keys WHERE api_key = %s AND exp_date > %s ;", (session, t))
     if cursor.rowcount <= 0:
@@ -186,8 +176,8 @@ def check_login(session):
 
 def make_username(role):
     alphabet = string.ascii_lowercase
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['signing']
+    cursor = db_mysql.newCursor("signing")
     role = role_lookup(role)
     while True:
         if "error" not in role:

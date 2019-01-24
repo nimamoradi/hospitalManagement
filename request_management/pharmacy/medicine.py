@@ -7,8 +7,8 @@ import json
 
 
 def search_medicine(medicine_name):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['pharmacy']
+    cursor = db_mysql.newCursor("pharmacy")
 
     cursor.execute('SELECT `id`, `name`, `price`, unix_timestamp(exp_date) FROM medicine WHERE name like %s ;',
                    ('%' + medicine_name + '%',))
@@ -24,8 +24,8 @@ def search_medicine(medicine_name):
 
 
 def add_medicine(name, price, exp_date):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['pharmacy']
+    cursor = db_mysql.newCursor("pharmacy")
 
     cursor.execute(
         'INSERT INTO medicine(name,price,exp_date) values (%s,%s,%s);', (name, price, exp_date))
@@ -34,8 +34,8 @@ def add_medicine(name, price, exp_date):
 
 
 def get_medicine(id):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['pharmacy']
+    cursor = db_mysql.newCursor("pharmacy")
 
     cursor.execute(
         'SELECT `id`, `name`, `price`, unix_timestamp(exp_date) FROM medicine WHERE id = %s ;', (id,))
@@ -44,18 +44,18 @@ def get_medicine(id):
 
 
 def update_medicine(id, price, exp_date):
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['pharmacy']
+    cursor = db_mysql.newCursor("pharmacy")
 
     cursor.execute(
         'UPDATE medicine SET price = %s , exp_date =%s WHERE id =%s;', (price, exp_date, id))
     db.commit()
-    return {'OK': True, 'medicine': json.dumps(cursor.fetchone(), default=json_serial)}
+    return {'OK': True, 'medicine': cursor.fetchall()}
 
 
 def get_medicine_bydate():
-    db = db_mysql.db
-    cursor = db_mysql.newCursor()
+    db = db_mysql.db_users['pharmacy']
+    cursor = db_mysql.newCursor("pharmacy")
 
     cursor.execute(
         'SELECT `id`, `name`, `price`, unix_timestamp(exp_date) FROM medicine order by exp_date;', ())
@@ -63,9 +63,9 @@ def get_medicine_bydate():
     return {'OK': True, 'medicines':  cursor.fetchall()}
 
 
-def json_serial(obj):
-    """JSON serializer for objects not serializable by default json code"""
+# def json_serial(obj):
+#     """JSON serializer for objects not serializable by default json code"""
 
-    if isinstance(obj, datetime):
-        return obj.isoformat()
-    return obj
+#     if isinstance(obj, datetime):
+#         return obj.isoformat()
+#     return obj
