@@ -14,11 +14,25 @@ database_users['signing'] = {
     "db_name": "hospital",
     "grants": [
         {"action": "SELECT, UPDATE, INSERT",
-            "table": ["users", "patient", "doctor", "receptor"]
+            "table": ["users", "patient", "doctor", "receptor", "api_keys"]
         }
     ]
 }
 
+database_users['pharmacy'] = {
+    "host": "localhost",
+    "user": "pharmacy",
+    "passwd": "fckvndmvdovdlv",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT, UPDATE, INSERT",
+            "table": ["medicine"]
+        },
+        {"action": "INSERT, UPDATE",
+         "table": ["invoice_item"]
+        }
+    ]
+}
 # database_users['doctor'] = {
 #     "host": "localhost",
 #     "user": "root",
