@@ -7,7 +7,8 @@ def search_doctor(docter_username):
     db = db_mysql.db
     cursor = db_mysql.newCursor()
 
-    cursor.execute('SELECT * FROM doctor WHERE username like %s ;', ('%' + docter_username + '%',))
+    cursor.execute('SELECT * FROM doctor WHERE username like %s ;',
+                   ('%' + docter_username + '%',))
     print((docter_username))
     print(cursor.rowcount)
     db.commit()
@@ -33,7 +34,8 @@ def cancel_reserve(reserve_id, doctor_username):
     user = cursor.fetchone()
     print(user)
     db.commit()
-    send_email(user['email'], user['name'] + ", your reservation is cancelled by doctor " + doctor_username)
+    send_email(user['email'], user['name'] +
+               ", your reservation is cancelled by doctor " + doctor_username)
     request_management.user.receptor.cancel_reserve(reserve_id)
     return {'OK': True}
 
@@ -42,7 +44,7 @@ def accept_reserve(reserve_id, doctor_username):
     db = db_mysql.db
     cursor = db_mysql.newCursor()
     cursor.execute(
-        'SELECT  users.* FROM (patient LEFT OUTER JOIN users ON '
+        'SELECT users.* FROM (patient LEFT OUTER JOIN users ON '
         '(patient.username = users.username) ),'
         'time_reserve LEFT OUTER JOIN time_request ON '
         '(time_reserve.id = time_request.time_reserve_id) WHERE time_reserve.id = %s '
@@ -54,7 +56,12 @@ def accept_reserve(reserve_id, doctor_username):
     db.commit()
     cursor.execute(
         'UPDATE time_request set active=1 WHERE time_reserve_id= %s', (reserve_id,))
-    send_email(user['email'], user['name'] + ", your reservation is accepted by doctor " + doctor_username)
+    db.commit()
+    cursor.execute(
+        "INSERT INTO `invoice_item`(`name`, `unit`, `origin`, `patient`, `type`, `unit_price`, `date`, `paid`) VALUES\
+        (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP, FALSE)", "reservation", 1, doctor_username, user['username'], "reservation", 45000,)
+    send_email(user['email'], user['name'] +
+               ", your reservation is accepted by doctor " + doctor_username)
 
     return {'OK': True}
 
@@ -63,6 +70,7 @@ def prescribe(patient_username, doctor_username, items):
     db = db_mysql.db
 
     cursor = db_mysql.newCursor()
+    cursor2 = db_mysql.newCursor()
     cursor.execute(
         'INSERT INTO prescription (docter_id,patient_id,date) VALUES (%s,%s,CURRENT_TIMESTAMP);',
         (doctor_username, patient_username,))
@@ -71,8 +79,13 @@ def prescribe(patient_username, doctor_username, items):
     db.commit()
     for item in items:
         cursor.execute(
-            'INSERT INTO prescription_item (prescription_id,medicine_id) VALUES (%s,%s);',
-            (prescription, item['id']))
+            'INSERT INTO prescription_item (prescription_id,medicine_id, dose) VALUES (%s,%s,%s);',
+            (prescription, item['id'], item['dose']))
+        cursor2.execute("SELECT price FROM medicine WHERE medicine_id = %s", item['id'])
+        price = cursor2.fetchone()['price']
+        cursor.execute(
+            "INSERT INTO `invoice_item`(`name`, `unit`, `origin`, `patient`, `type`, `unit_price`, `date`, `paid`) VALUES\
+            (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP, FALSE)", item['id'], item['dose'], doctor_username, patient_username, "prescription", price,)
     db.commit()
 
     return {'OK': True}
@@ -100,7 +113,7 @@ def hospitalize(patient_username, doctor_username):
     cursor.execute(
         'INSERT INTO bed(patient_username,doctor_username)'
         'VALUES (%s,%s)',
-        (patient_username,doctor_username))
+        (patient_username, doctor_username))
     user = cursor.fetchall()
     print(user)
     db.commit()

@@ -6,6 +6,8 @@ from bottle import Bottle, get, post, route, run, template, request, hook, respo
 import request_management
 from request_management.user import signing, profile
 from request_management.chat import chat
+from request_management.accounting import accounting
+
 
 # import cronJobs
 # import botManager
@@ -289,6 +291,28 @@ def index():
     j = request.json
 
     dict = chat.get_messages(j)
+    return dict  # send api result as json, no need to encode
+
+
+@route('/get_invoice', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+
+    j = request.json
+
+    dict = accounting.get_invoice(j)
+    return dict  # send api result as json, no need to encode
+
+
+@route('/pay', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+
+    j = request.json
+
+    dict = accounting.pay(j)
     return dict  # send api result as json, no need to encode
 
 
