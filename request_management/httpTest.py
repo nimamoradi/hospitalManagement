@@ -4,6 +4,8 @@ import string
 from bottle import Bottle, get, post, route, run, template, request, hook, response
 
 import request_management
+from rbac.roles import api_key_to_user, permission
+from rbac.roles import roles as user_group
 from request_management.user import signing, profile
 from request_management.chat import chat
 
@@ -206,7 +208,11 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    return request_management.user.dotor_func.get_medicine_history(j['patient_username'])
+    api_key = api_key_to_user(j['api_key'])
+    if api_key['OK'] and permission(api_key['user']['role'], ['doctor', 'admin']):
+        return request_management.user.dotor_func.get_medicine_history(j['patient_username'])
+    else:
+        return {'OK': False, 'Error': 'no permission'}
 
 
 @post('/patient_hospitalize', method=['POST', 'OPTIONS'])
