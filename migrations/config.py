@@ -51,6 +51,9 @@ database_users['patient'] = {
          },
         {"action": "SELECT, INSERT",
          "table": ["time_request"]
+         },
+        {"action": "SELECT",
+         "table": ["bed"]
          }
     ]
 }
