@@ -12,6 +12,7 @@ def edit_profile(j):
     db = db_mysql.db_users['patient']
     cursor = db_mysql.newCursor("patient")
 
+
     api_key = j['api_key']
     name = j['name']
     phone_number = j['phone_number']
@@ -25,20 +26,20 @@ def edit_profile(j):
 
     if api_key is None:
         return {'OK': False, 'Error': "You are not logged in"}
-
+    username = check_login(api_key)
     if password is not None and password != "":
         salt = secrets.token_hex(16)
         temp = (salt + password)
         hash = hashlib.sha512()
         hash.update(temp.encode('utf-8'))
         password = hash.hexdigest()
-        cursor.execute("UPDATE `users` SET password = %s, salt = %s",
-                       (password, salt,))
+        cursor.execute("UPDATE `users` SET password = %s, salt = %s WHERE username = %s",
+                       (password, salt, username,))
         db.commit()
 
     cursor.execute("UPDATE `users` SET name = %s, phone_number =%s, birth_year = %s, postal_code = %s, address = %s, weight = %s,\
-                    gender = %s, height = %s",
-                   (name, phone_number, birth_year, postal_code, address, weight, gender, height))
+                    gender = %s, height = %s WHERE username = %s",
+                   (name, phone_number, birth_year, postal_code, address, weight, gender, height, username,))
     db.commit()
     
     dict = {'OK': True}

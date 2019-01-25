@@ -12,6 +12,7 @@ from request_management.user.dotor_func import search_doctor
 from request_management.user.reservation import reserve_doctor_time
 import request_management.user.receptor
 import request_management.pharmacy.medicine
+import request_management.chat.chat
 
 print("hi server")
 
@@ -240,6 +241,17 @@ def index():
     j = request.json
 
     dict = profile.edit_profile(j)
+    return dict  # send api result as json, no need to encode
+
+
+@route('/send_chat', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+
+    j = request.json
+
+    dict = 
     return dict  # send api result as json, no need to encode
 
 
