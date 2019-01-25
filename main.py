@@ -5,10 +5,10 @@ from seeds.seedUsers import seed
 
 
 def main():
-    migrate()
+    # migrate()
     # add admin
     seed('admin_hard_password')
-    # _req()
+    _req()
 
 
 if __name__ == '__main__':

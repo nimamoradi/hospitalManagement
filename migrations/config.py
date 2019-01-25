@@ -15,7 +15,7 @@ database_users['signing'] = {
     "grants": [
         {"action": "SELECT, UPDATE, INSERT",
             "table": ["users", "patient", "doctor", "receptor", "api_keys"]
-        }
+         }
     ]
 }
 
@@ -27,12 +27,20 @@ database_users['pharmacy'] = {
     "grants": [
         {"action": "SELECT, UPDATE, INSERT",
             "table": ["medicine"]
-        },
+         },
         {"action": "INSERT, UPDATE",
          "table": ["invoice_item"]
-        }
+         }
     ]
 }
+
+database_users['root'] = {
+    "host": "localhost",
+    "user": "root",
+    "passwd": "",
+    "db_name": "hospital"
+}
+
 
 database_users['patient'] = {
     "host": "localhost",
@@ -42,13 +50,24 @@ database_users['patient'] = {
     "grants": [
         {"action": "SELECT",
             "table": ["time_reserve"]
-        },
+         },
         {"action": "SELECT, INSERT, UPDATE",
          "table": ["time_request", "users", "patient"]
-        }
+         }
     ]
 }
 
+database_users['message'] = {
+    "host": "localhost",
+    "user": "message",
+    "passwd": "dkskmvdsmvdl",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT, INSERT",
+            "table": ["messages"]
+         }
+    ]
+}
 # database_users['doctor'] = {
 #     "host": "localhost",
 #     "user": "root",

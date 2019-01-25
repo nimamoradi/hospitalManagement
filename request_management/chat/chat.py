@@ -12,34 +12,19 @@ from request_management import db_mysql, Mail
 from rbac.roles import roles
 
 
-def register(j):
-    db = db_mysql.db_users['signing']
-    cursor = db_mysql.newCursor("signing")
+def send_message(j):
+    db = db_mysql.db_users['message']
+    cursor = db_mysql.newCursor("message")
 
-    name = j['name']
-    phone_number = j['phone_number']
-    role = j['role']
-    password = j['password']
-    email = j['email']
+    destination = j['destination']
+    message = j['message']
+    api_key = j['api_key']
 
-    if phone_number is None or email is None or name is None or role is None:
+    if destination is None or message is None or api_key is None:
         return {'OK': False, 'Error': "not a valid json"}
 
-    salt = secrets.token_hex(16)
-    temp = (salt + password)
-    hash = hashlib.sha512()
-    hash.update(temp.encode('utf-8'))
-    password = hash.hexdigest()
-    # Password = hashlib.sha512(temp).hexdigest()
+    username = check_login(api_key)
 
-    cursor.execute('SELECT * FROM users WHERE email = %s ;', (email,))
-    print("     ")
-    print(cursor.rowcount)
-    db.commit()
-    if cursor.rowcount > 0:
-        return {'OK': False, 'Error': 'Email %s already exists in system ' % cursor.fetchone()['email']}
-
-    username = make_username(role)
     cursor.execute("INSERT INTO users(username, password, salt, email, name, phone_number, role)"
                    + " VALUES ( %s, %s, %s, %s, %s, %s, %s);",
                    (username, password, salt, email, name, phone_number, role,))
@@ -66,44 +51,14 @@ def register(j):
     return dict
 
 
-def forget_password(j):
-    db = db_mysql.db_users['signing']
-    cursor = db_mysql.newCursor("signing")
+def check_login(session):
+    t = datetime.datetime.now()
+    cursor = db_mysql.newCursor()
+    cursor.execute(
+        "SELECT * FROM api_keys WHERE api_key = %s AND exp_date > %s ;", (session, t))
+    if cursor.rowcount <= 0:
+        return False
 
-    if 'email' in j:
-        email = j['email']
-    else:
-        return {'OK': False, 'Error': "not a valid json"}
-
-    cursor.execute('SELECT * FROM users WHERE email = %s ;', (email,))
-    print("     ")
-    print(cursor.rowcount)
-    db.commit()
-    if cursor.rowcount == 0:
-        return {'OK': False, 'Error': 'Email %s already exists in system ' % cursor.fetchone()['email']}
-
-    new_password = "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
-    salt = secrets.token_hex(16)
-    temp = (salt + new_password)
-    hash = hashlib.sha512()
-    hash.update(temp.encode('utf-8'))
-    password = hash.hexdigest()
-
-    cursor.execute("UPDATE users SET"
-                   " password = %s , salt = %s  WHERE email = %s",
-                   (password, salt, email))
-    db.commit()
-    try:
-        send_password_by_email(email, new_password)
-        pass
-    except smtplib.SMTPRecipientsRefused as e:
-        print("email not sent: Bad Recipient" + e)  # inform user
-        ok = False
-        error = "Email address not correct"
-
-    dict = {'OK': True}
-    return dict
-
-
-
-
+    row = cursor.fetchone()
+    username = row['username']
+    return username

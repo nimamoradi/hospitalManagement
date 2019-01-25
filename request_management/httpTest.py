@@ -244,14 +244,14 @@ def index():
     return dict  # send api result as json, no need to encode
 
 
-@route('/send_chat', method=['POST', 'OPTIONS'])
+@route('/send_message', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
         return "error: not a json"
 
     j = request.json
 
-    dict = 
+    dict = chat
     return dict  # send api result as json, no need to encode
 
 
