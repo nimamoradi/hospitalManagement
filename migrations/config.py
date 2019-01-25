@@ -57,7 +57,20 @@ database_users['patient'] = {
          }
     ]
 }
-
+database_users['api_key'] = {
+    "host": "localhost",
+    "user": "api_key",
+    "passwd": "ahgbskjdaui",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT",
+         "table": ["users"]
+         },
+        {"action": "SELECT",
+         "table": ["api_keys"]
+         },
+    ]
+}
 database_users['doctor'] = {
     "host": "localhost",
     "user": "doctor",
