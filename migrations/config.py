@@ -120,6 +120,19 @@ database_users['message'] = {
          }
     ]
 }
+
+database_users['accounting'] = {
+    "host": "localhost",
+    "user": "accounting",
+    "passwd": "dkskmvdsmvdl",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT, INSERT, UPDATE",
+            "table": ["invoice_item"]
+         }
+    ]
+}
+
 # database_users['receptor'] = {
 #     "host": "localhost",
 #     "user": "root",

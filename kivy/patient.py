@@ -1,30 +1,29 @@
-
+import requests
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.properties import ObjectProperty
 from kivy.uix.listview import ListItemButton
- 
+from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
+from kivy.properties import StringProperty
 
-class PatientButton(ListItemButton):
-    pass
+import edit
+
  
- 
-class Patient(BoxLayout):
- 
-    # Connects the value in the TextInput widget to these
-    # fields
-    search_text_input = ObjectProperty()
-    search_list = ObjectProperty()
- 
+class Patient(Screen):
     def edit(self):
+        #print("helooo")
+        self.manager.transition = SlideTransition(direction="left")
+        self.manager.current = 'edit'
+
+    def vist(self):
         pass
 
- 
+
 class PatientApp(App):
+    search_text_input = ObjectProperty()
+    search_list = ObjectProperty()
     def build(self):
-        return Patient()
- 
- 
-dbApp = PatientApp()
- 
-dbApp.run()
+        manager = ScreenManager()
+        manager.add_widget(Patient(name='patient'))
+        manager.add_widget(edit.Edit(name='edit'))
+        return manager
