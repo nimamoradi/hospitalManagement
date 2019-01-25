@@ -11,19 +11,10 @@ import edit
  
 class Patient(Screen):
     def edit(self):
-        #print("helooo")
+        app = App.get_running_app()
         self.manager.transition = SlideTransition(direction="left")
         self.manager.current = 'edit'
-
+        app.config.read(app.get_application_config())
+        app.config.write()
     def vist(self):
         pass
-
-
-class PatientApp(App):
-    search_text_input = ObjectProperty()
-    search_list = ObjectProperty()
-    def build(self):
-        manager = ScreenManager()
-        manager.add_widget(Patient(name='patient'))
-        manager.add_widget(edit.Edit(name='edit'))
-        return manager

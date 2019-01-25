@@ -7,6 +7,7 @@ from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.properties import StringProperty
 
 import patient
+import edit
 
 class StudentDBApp(App):
  
@@ -19,6 +20,7 @@ class StudentDBApp(App):
         manager = ScreenManager()
         manager.add_widget(StudentDB(name='studentdb'))
         manager.add_widget(patient.Patient(name='patient'))
+        manager.add_widget(edit.Edit(name='edit'))
         return manager
 
 class StudentDB(Screen):
