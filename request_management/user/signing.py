@@ -165,13 +165,13 @@ def check_login(session):
     db = db_mysql.db_users['signing']
     cursor = db_mysql.newCursor("signing")
     cursor.execute(
-        "SELECT * FROM api_keys WHERE api_key = %s AND exp_date > %s ;", (session, t))
+        "SELECT * FROM api_keys, users WHERE api_key.username = users.username AND api_key = %s AND exp_date > %s ;", (session, t))
     if cursor.rowcount <= 0:
         return False
 
     row = cursor.fetchone()
     username = row['username']
-    return username
+    return username, db_mysql.db_users[row['role']]
 
 
 def make_username(role):
