@@ -92,3 +92,16 @@ def get_medicine_history(patient_username):
 
 def send_email(Email, body):
     Mail.mail(Email, "no-reply: Your hospital account reservations", body)
+
+
+def hospitalize(patient_username, doctor_username):
+    db = db_mysql.db_users['doctor']
+    cursor = db_mysql.newCursor('doctor')
+    cursor.execute(
+        'INSERT INTO bed(patient_username,doctor_username)'
+        'VALUES (%s,%s)',
+        (patient_username,doctor_username))
+    user = cursor.fetchall()
+    print(user)
+    db.commit()
+    return {'OK': True}

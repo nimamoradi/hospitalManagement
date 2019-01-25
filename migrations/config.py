@@ -14,7 +14,7 @@ database_users['signing'] = {
     "db_name": "hospital",
     "grants": [
         {"action": "SELECT, UPDATE, INSERT",
-            "table": ["users", "patient", "doctor", "receptor", "api_keys"]
+         "table": ["users", "patient", "doctor", "receptor", "api_keys"]
          }
     ]
 }
@@ -26,10 +26,16 @@ database_users['pharmacy'] = {
     "db_name": "hospital",
     "grants": [
         {"action": "SELECT, UPDATE, INSERT",
-            "table": ["medicine"]
+         "table": ["medicine"]
          },
         {"action": "INSERT, UPDATE",
          "table": ["invoice_item"]
+         },
+        {"action": "SELECT, UPDATE, INSERT",
+         "table": ["prescription"]
+         },
+        {"action": "SELECT",
+         "table": ["prescription_item"]
          }
     ]
 }
@@ -53,6 +59,39 @@ database_users['patient'] = {
          },
         {"action": "SELECT, INSERT, UPDATE",
          "table": ["time_request", "users", "patient"]
+         },
+        {"action": "SELECT",
+         "table": ["bed"]
+         }
+    ]
+}
+
+database_users['doctor'] = {
+    "host": "localhost",
+    "user": "doctor",
+    "passwd": "asdtverver",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT",
+         "table": ["medicine"]
+         },
+        {"action": "SELECT",
+         "table": ["patient"]
+         },
+        {"action": "INSERT, UPDATE",
+         "table": ["invoice_item"]
+         },
+        {"action": "SELECT, UPDATE, INSERT",
+         "table": ["prescription"]
+         },
+        {"action": "SELECT, UPDATE, DELETE",
+         "table": ["time_request"]
+         },
+        {"action": "SELECT, UPDATE, INSERT",
+         "table": ["prescription_item"]
+         },
+        {"action": "SELECT, UPDATE, INSERT",
+         "table": ["bed"]
          }
     ]
 }
@@ -68,16 +107,6 @@ database_users['message'] = {
          }
     ]
 }
-# database_users['doctor'] = {
-#     "host": "localhost",
-#     "user": "root",
-#     "passwd": "",
-#     "db_name": "hospital",
-#     "grants": [
-
-#     ]
-# }
-
 # database_users['receptor'] = {
 #     "host": "localhost",
 #     "user": "root",

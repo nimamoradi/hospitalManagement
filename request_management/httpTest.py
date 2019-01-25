@@ -81,6 +81,15 @@ def index():
     return request_management.pharmacy.medicine.get_medicine(j['id'])
 
 
+@post('/get_prescription_details', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmacy.medicine. \
+        get_prescription_details(j['ids'])
+
+
 @post('/update_medicine', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
@@ -198,6 +207,22 @@ def index():
         return "error: not a json"
     j = request.json
     return request_management.user.dotor_func.get_medicine_history(j['patient_username'])
+
+
+@post('/patient_hospitalize', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.dotor_func.hospitalize(j['patient_username'], j['doctor_username'])
+
+
+@post('/get_user_prescription', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.pharmacy.medicine.get_user_prescription(j['patient_username'])
 
 
 @route('/login', method=['POST', 'OPTIONS'])
