@@ -5,6 +5,8 @@ from bottle import Bottle, get, post, route, run, template, request, hook, respo
 
 import request_management
 from request_management.user import signing, profile
+from request_management.chat import chat
+
 # import cronJobs
 # import botManager
 from request_management import db_mysql
@@ -12,7 +14,6 @@ from request_management.user.dotor_func import search_doctor
 from request_management.user.reservation import reserve_doctor_time
 import request_management.user.receptor
 import request_management.pharmacy.medicine
-import request_management.chat.chat
 
 print("hi server")
 
@@ -251,7 +252,18 @@ def index():
 
     j = request.json
 
-    dict = chat
+    dict = chat.send_message(j)
+    return dict  # send api result as json, no need to encode
+
+
+@route('/get_messages', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+
+    j = request.json
+
+    dict = chat.get_messages(j)
     return dict  # send api result as json, no need to encode
 
 
