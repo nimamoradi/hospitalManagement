@@ -55,15 +55,35 @@ database_users['patient'] = {
     ]
 }
 
-# database_users['doctor'] = {
-#     "host": "localhost",
-#     "user": "root",
-#     "passwd": "",
-#     "db_name": "hospital",
-#     "grants": [
-
-#     ]
-# }
+database_users['doctor'] = {
+    "host": "localhost",
+    "user": "doctor",
+    "passwd": "asdtverver",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT",
+         "table": ["medicine"]
+         },
+        {"action": "SELECT",
+         "table": ["patient"]
+         },
+        {"action": "INSERT, UPDATE",
+         "table": ["invoice_item"]
+         },
+        {"action": "SELECT, UPDATE, INSERT",
+         "table": ["prescription"]
+         },
+        {"action": "SELECT, UPDATE, DELETE",
+         "table": ["time_request"]
+         },
+        {"action": "SELECT, UPDATE, INSERT",
+         "table": ["prescription_item"]
+         },
+        {"action": "SELECT, UPDATE, INSERT",
+         "table": ["bed"]
+         }
+    ]
+}
 
 # database_users['receptor'] = {
 #     "host": "localhost",
