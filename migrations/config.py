@@ -40,6 +40,14 @@ database_users['pharmacy'] = {
     ]
 }
 
+database_users['root'] = {
+    "host": "localhost",
+    "user": "root",
+    "passwd": "",
+    "db_name": "hospital"
+}
+
+
 database_users['patient'] = {
     "host": "localhost",
     "user": "patient",
@@ -47,10 +55,10 @@ database_users['patient'] = {
     "db_name": "hospital",
     "grants": [
         {"action": "SELECT",
-         "table": ["time_reserve"]
+            "table": ["time_reserve"]
          },
-        {"action": "SELECT, INSERT",
-         "table": ["time_request"]
+        {"action": "SELECT, INSERT, UPDATE",
+         "table": ["time_request", "users", "patient"]
          },
         {"action": "SELECT",
          "table": ["bed"]
@@ -88,6 +96,17 @@ database_users['doctor'] = {
     ]
 }
 
+database_users['message'] = {
+    "host": "localhost",
+    "user": "message",
+    "passwd": "dkskmvdsmvdl",
+    "db_name": "hospital",
+    "grants": [
+        {"action": "SELECT, INSERT",
+            "table": ["messages"]
+         }
+    ]
+}
 # database_users['receptor'] = {
 #     "host": "localhost",
 #     "user": "root",

@@ -26,7 +26,7 @@ except MySQLdb.Error as e:
     print(str(e))
 
 
-def newCursor(db_user):
+def newCursor(db_user='root'):
     crsr = db_users[db_user].cursor(MySQLdb.cursors.DictCursor)
     crsr.execute('SET NAMES utf8;')
     crsr.execute('SET CHARACTER SET utf8;')
