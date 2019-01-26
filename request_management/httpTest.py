@@ -114,7 +114,7 @@ def index():
     if not request.json:
         return "error: not a json"
     j = request.json
-    if 'username' in j and len(j['username']) > 2:
+    if 'username' in j:
         dict = search_doctor(j['username'])
     else:
         return "error: missing param"

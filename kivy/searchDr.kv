@@ -9,7 +9,6 @@ SearchDr:
  
 <SearchDr>:
     orientation: "vertical"
-    search_list: search_list_view
     padding: 10
     spacing: 10
     BoxLayout:
@@ -19,8 +18,13 @@ SearchDr:
         padding: [10,700,10,10]
         spacing: 20
         
-    ListView:
-        id: search_list_view
-        adapter:
+    #ListView:
+        #id: search_list_view
+        #adapter:
             # ListAdapter(data=["test"],cls=label.Label)
-            sla.SimpleListAdapter(data=["Item #{0}".format(i) for i in range(100)], cls=label.Label)
+            #sla.SimpleListAdapter(data=["Item #{0}".format(i) for i in range(100)], cls=label.Label)
+    # ListView:
+    #     item_strings: root.mMyList
+
+    ListView:
+        item_strings: [str(index) for index in root.features]

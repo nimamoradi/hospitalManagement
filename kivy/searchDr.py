@@ -7,32 +7,14 @@ from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.properties import StringProperty
 from kivy.uix.recycleview import RecycleView
 from kivy.lang import Builder
-
-Builder.load_string('''
-<RV>:
-    viewclass: 'Label'
-    RecycleBoxLayout:
-        default_size: None, dp(56)
-        default_size_hint: 1, None
-        size_hint_y: None
-        height: self.minimum_height
-        orientation: 'vertical'
-''')
-
-
-class RV(RecycleView):
-    def __init__(self, **kwargs):
-        super(RV, self).__init__(**kwargs)
-        self.data = [{'text': str(x)} for x in range(100)]
-
-
-
-class SearchDrListButton(ListItemButton):
-    def edfffit(self):
-        pass
+from patient import get_ashghal_func
 
 class SearchDr(Screen):
-    search_list = ObjectProperty()
+    # features = ["A", "B", "C"]
+    features = []
+    r3 = get_ashghal_func()
+    for d in r3['doctors']:
+        features.append(d['username'])
     def edit(self):
         pass
 
