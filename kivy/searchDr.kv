@@ -2,7 +2,9 @@
 #: import main searchDr
 #: import ListAdapter kivy.adapters.listadapter.ListAdapter
 #: import ListItemButton kivy.uix.listview.ListItemButton
- 
+#:import label kivy.uix.label
+#:import sla kivy.adapters.simplelistadapter
+
 SearchDr:
  
 <SearchDr>:
@@ -11,17 +13,14 @@ SearchDr:
     padding: 10
     spacing: 10
     BoxLayout:
+        orientation: "vertical"
         size_hint_y: None
         height: "40dp"
-        spacing: 10
-        Label:
-            text: "Result"
-
-
- 
-    # Define starting data and point to the ListItemButton
-    # in the Python code
+        padding: [10,700,10,10]
+        spacing: 20
+        
     ListView:
         id: search_list_view
         adapter:
-            ListAdapter(data=["test"], cls=main.SearchDrListButton)
+            # ListAdapter(data=["test"],cls=label.Label)
+            sla.SimpleListAdapter(data=["Item #{0}".format(i) for i in range(100)], cls=label.Label)

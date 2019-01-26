@@ -25,7 +25,7 @@ class Edit(Screen):
         app.config.read(app.get_application_config())
         app.config.write()
 
-    def vist(self):
+    def set(self):
         pass
 
 class EditApp(App):

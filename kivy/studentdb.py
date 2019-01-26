@@ -8,11 +8,10 @@ from kivy.properties import StringProperty
 
 import patient
 import edit
+import searchDr
+
 
 class StudentDBApp(App):
- 
-    # Connects the value in the TextInput widget to these
-    # fields
     user_name_log_text_input = ObjectProperty()
     password_log_text_input = ObjectProperty()
     student_list = ObjectProperty()
@@ -21,6 +20,8 @@ class StudentDBApp(App):
         manager.add_widget(StudentDB(name='studentdb'))
         manager.add_widget(patient.Patient(name='patient'))
         manager.add_widget(edit.Edit(name='edit'))
+        manager.add_widget(searchDr.SearchDr(name='search'))
+
         return manager
 
 class StudentDB(Screen):
@@ -31,7 +32,7 @@ class StudentDB(Screen):
         print(login)
         r = requests.post(url='http://localhost:2228/login', json=login)
         #print(r.json()['api_key'])
-        # print(r.json())
+        #print(r.json())
         
         app = App.get_running_app()
         if 'User' in r.json().keys():
