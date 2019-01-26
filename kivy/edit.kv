@@ -11,13 +11,19 @@ Edit:
     password_text_input: password
     telephone_text_input: telephone
     email_text_input: email
-    padding: [10,10,10,10]
-    spacing: 5
+    padding: [10,20,10,10]
+    spacing: 10
     BoxLayout:
+        orientation: "vertical"
+        padding: [20,10,10,10]
+        spacing: 5
         size_hint_y: None
         height: "40dp"
-        Label:
-            text: "Edit"
+        BoxLayout:
+            size_hint_y: None
+            height: "40dp"
+            Label:
+                text: "Edit"
 
         BoxLayout:
             size_hint_y: None

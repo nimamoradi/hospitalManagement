@@ -36,6 +36,5 @@ class EditApp(App):
     def build(self):
         manager = ScreenManager()
         manager.add_widget(Edit(name='studentdb'))
-        manager.add_widget(Patient(name='patient'))
 
         return manager

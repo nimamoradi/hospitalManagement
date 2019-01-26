@@ -16,5 +16,9 @@ class Patient(Screen):
         self.manager.current = 'edit'
         app.config.read(app.get_application_config())
         app.config.write()
-    def vist(self):
+    def inbox(self):
+        pass
+    def sent(self):
+        pass
+    def search(self):
         pass

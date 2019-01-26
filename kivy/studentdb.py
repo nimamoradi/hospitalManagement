@@ -34,9 +34,6 @@ class StudentDB(Screen):
         # print(r.json())
         
         app = App.get_running_app()
-
-
-
         if 'User' in r.json().keys():
             if r.json()['User']['role'] == 'patient':
                 self.manager.transition = SlideTransition(direction="left")
