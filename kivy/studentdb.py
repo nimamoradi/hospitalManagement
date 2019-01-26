@@ -20,7 +20,9 @@ class StudentDBApp(App):
         manager.add_widget(StudentDB(name='studentdb'))
         manager.add_widget(patient.Patient(name='patient'))
         manager.add_widget(edit.Edit(name='edit'))
-        manager.add_widget(searchDr.SearchDr(name='search'))
+        ss2 = searchDr.SearchDr(name='search')
+        self.ss = ss2
+        manager.add_widget(ss)
 
         return manager
 

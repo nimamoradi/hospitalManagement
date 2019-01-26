@@ -8,6 +8,18 @@ from kivy.properties import StringProperty
 import searchDr
 
 
+class Config:
+    wr = {}
+    __myvalue = {}
+
+    def __init(self):
+        self.dict = self.__wr
+
+    def myValue(self, value=None):
+        if value:
+            self.__myvalue = value
+        return self.__myvalue
+
 r = {}
 def get_ashghal_func():
     return r
@@ -39,10 +51,10 @@ class Patient(Screen):
         login = {}
         login['username'] = self.search_text_input.text
         print("searrcchhhh issss %s"%login['username'])
-        
-        set_ashghal_func(requests.post(url='http://localhost:2228/search_doctor', json=login))
+        r = {}
+        r = requests.post(url='http://localhost:2228/search_doctor', json=login)
         #print(r.json()['api_key'])
-
+        searchDr.ss.features = r
         app = App.get_running_app()
         self.manager.transition = SlideTransition(direction="left")
         self.manager.current = 'search'
