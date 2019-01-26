@@ -63,6 +63,8 @@ def accept_reserve(reserve_id, doctor_username):
     send_email(user['email'], user['name'] +
                ", your reservation is accepted by doctor " + doctor_username)
 
+    
+
     return {'OK': True}
 
 
@@ -78,9 +80,14 @@ def prescribe(patient_username, doctor_username, items):
     print(prescription)
     db.commit()
     for item in items:
-        cursor.execute(
-            'INSERT INTO prescription_item (prescription_id,medicine_id, dose) VALUES (%s,%s,%s);',
-            (prescription, item['id'], item['dose']))
+        if item["typelord"] == "d":
+            cursor.execute(
+                'INSERT INTO labratory (`doctor`, `patient`, `type`, `result`, `paid`, `description`) VALUES (%s,%s,%s,%s,%s,%s);',
+                (prescription, item['id'], item['type'], "", False, item['desc']))
+        else:    
+            cursor.execute(
+                'INSERT INTO prescription_item (prescription_id,medicine_id, dose) VALUES (%s,%s,%s);',
+                (prescription, item['id'], item['dose']))
         cursor2.execute("SELECT price FROM medicine WHERE medicine_id = %s", item['id'])
         price = cursor2.fetchone()['price']
         cursor.execute(
@@ -89,6 +96,19 @@ def prescribe(patient_username, doctor_username, items):
     db.commit()
 
     return {'OK': True}
+
+
+def prescribe(patient_username):
+    db = db_mysql.db
+
+    cursor = db_mysql.newCursor()
+    cursor2 = db_mysql.newCursor()
+
+    cursor2.execute(
+        "SELECT * FROM labratory WHERE paid = TRUE AND patient =  %s and result IS NOT NULL", patient_username)
+    db.commit()
+
+    return {'OK': True, results= cursor.fetchall()}
 
 
 def get_medicine_history(patient_username):

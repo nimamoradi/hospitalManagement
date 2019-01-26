@@ -41,7 +41,7 @@ def add_doctor_time(doctor_username, week_day, hour,price):
 
     cursor.execute(
         'INSERT INTO time_reserve (doctor_username,week_day,hour,price)'
-        'VALUES (%s,%s,%s);',
+        'VALUES (%s,%s,%s, %s);',
         (doctor_username, week_day, hour,price))
 
     print(cursor.rowcount)

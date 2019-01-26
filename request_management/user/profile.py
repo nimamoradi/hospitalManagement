@@ -26,6 +26,8 @@ def edit_profile(j):
     if api_key is None:
         return {'OK': False, 'Error': "You are not logged in"}
     username = check_login(api_key)
+    if username is False:
+        return {'OK': False}
     if password is not None and password != "":
         salt = secrets.token_hex(16)
         temp = (salt + password)

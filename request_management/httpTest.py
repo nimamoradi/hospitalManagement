@@ -267,6 +267,16 @@ def index():
     return dict  # send api result as json, no need to encode
 
 
+@post('/show_res', method=['POST', 'OPTIONS'])
+def index():
+    if not request.json:
+        return "error: not a json"
+    j = request.json
+    return request_management.user.dotor_func.show_result(j['patient_id'], j['username'],
+                                                        j['prescription'])
+
+
+
 @route('/edit_profile', method=['POST', 'OPTIONS'])
 def index():
     if not request.json:
