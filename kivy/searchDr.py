@@ -7,12 +7,12 @@ from kivy.uix.screenmanager import ScreenManager, Screen, SlideTransition
 from kivy.properties import StringProperty
 from kivy.uix.recycleview import RecycleView
 from kivy.lang import Builder
-from patient import get_ashghal_func
+import patient
 
 class SearchDr(Screen):
     # features = ["A", "B", "C"]
     features = []
-    r3 = get_ashghal_func()
+    r3 = patient.get_ashghal_func()
     for d in r3['doctors']:
         features.append(d['username'])
     def edit(self):

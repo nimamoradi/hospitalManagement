@@ -11,6 +11,11 @@ Edit:
     password_text_input: password
     telephone_text_input: telephone
     email_text_input: email
+    address_text_input: address
+    sex_text_input: sex
+    code_text_input: code
+    yearbirth_text_input: yearbirth
+    age_text_input: hight
     padding: [10,20,10,10]
     spacing: 10
     BoxLayout:
@@ -57,7 +62,7 @@ Edit:
             size_hint_y: None
             height: "40dp"
             Label:
-                text: 'Email'
+                text: 'Weight'
             TextInput:
                 id: email
 
@@ -89,13 +94,6 @@ Edit:
             TextInput:
                 id: yearbirth
 
-        BoxLayout:
-            size_hint_y: None
-            height: "40dp"
-            Label:
-                text: 'Age'
-            TextInput:
-                id: age
         BoxLayout:
             size_hint_y: None
             height: "40dp"

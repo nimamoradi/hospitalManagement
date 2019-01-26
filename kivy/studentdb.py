@@ -25,6 +25,23 @@ class StudentDBApp(App):
         return manager
 
 class StudentDB(Screen):
+    def done(self):
+        login = {}
+        
+        login['name'] = self.user_name_text_input.text
+        login['password'] = self.password_text_input.text
+        login['role'] = self.type_text_input.text
+        login['email'] = self.email_text_input.text
+        login['phone_number'] = self.telephone_text_input.text
+        print(login)
+        r = requests.post(url='http://localhost:2228/register', json=login)
+
+    def forget(self):
+        login = {}
+        login['email'] = self.user_name_log_text_input.text
+        print(login)
+        r = requests.post(url='http://localhost:2228/forget', json=login)
+
     def submit_student(self):
         login = {}
         login['username'] = self.user_name_log_text_input.text

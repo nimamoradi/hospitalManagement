@@ -16,11 +16,12 @@
     user_name_text_input: user_name
     telephone_text_input: telephone
     email_text_input: email
+    type_text_input: type
 
 
     BoxLayout:
         orientation: 'vertical'
-        padding: [10,200,10,10]
+        padding: [10,150,10,10]
         spacing: 30
         Label:
             text: "Login"
@@ -48,7 +49,7 @@
             Button:
                 text: "Forget"
                 font_size: 24
-                #on_press: root.delete_student()
+                on_press: root.forget()
         BoxLayout:
             size_hint_y: None
             height: "40dp"
@@ -84,18 +85,25 @@
                 id: telephone
 
         BoxLayout:
-            size_hint_y: None
+           size_hint_y: None
             height: "40dp"
             Label:
                 text: 'Email'
             TextInput:
-                id: email
+                id: email 
+        BoxLayout:
+           size_hint_y: None
+            height: "40dp"
+            Label:
+                text: 'Type'
+            TextInput:
+                id: type 
         BoxLayout:
             size_hint_y: None
             height: "40dp"
             Button:
                 text: 'Done'
-                on_press: root.submit_student()
+                on_press: root.done()
 
 
 

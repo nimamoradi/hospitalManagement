@@ -26,7 +26,23 @@ class Edit(Screen):
         app.config.write()
 
     def set(self):
-        pass
+        login = {}
+        login['password'] = self.password_text_input.text
+        login['name'] = self.name_text_input.text
+        login['phone_number'] = self.telephone_text_input.text
+        login['address'] = self.address_text_input.text
+        login['gender'] = self.sex_text_input.text
+        login['postal_code'] = self.code_text_input.text
+        login['birth_year'] = self.yearbirth_text_input.text
+        login['height'] = self.age_text_input.text
+        login['weight'] = self.email_text_input.text
+        print(login)
+        r = requests.post(url='http://localhost:2228/login', json=login)
+        app = App.get_running_app()
+        self.manager.transition = SlideTransition(direction="left")
+        self.manager.current = 'patient'
+        app.config.read(app.get_application_config())
+        app.config.write()
 
 class EditApp(App):
 
