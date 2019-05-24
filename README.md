@@ -1,4 +1,7 @@
 # hospital management system
+
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/4bc828209bd04a3aa90571ad57c7590e)](https://app.codacy.com/app/nimamoradi/hospitalManagement?utm_source=github.com&utm_medium=referral&utm_content=nimamoradi/hospitalManagement&utm_campaign=Badge_Grade_Dashboard)
+
   <p align="center" >
         <img width="20%" src="images/database.png"/>
         
